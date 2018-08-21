@@ -15,4 +15,10 @@ require 'shoes'
       end
     }
 
+    stack do
+      # widht & height values used from window_App size
+      rect(70, 120, self.width - 140, self.height - 240, corners=4)
+      background lightcoral
+    end
+
  end
