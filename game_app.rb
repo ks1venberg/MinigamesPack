@@ -1,30 +1,30 @@
 require 'shoes'
 
- Shoes.app(title: "welcome to minigames pack!", width: 400, height: 500) do
+ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 460) do
 
-   background skyblue
+   background darkgreen
 
    stack(margin: 10) do
       flow do
-        button "Slot machine"
-        para "Try to win in this classic casino game!"
+        button "Slot machine", width: 80
+        para "Try this classic casino game!", margin: 4
       end
       flow do
-        button "Tic-Tac-Toe"
-        para "Miss about school years?! If yes, try it!"
+        button "Tic-Tac-Toe", width: 80
+        para "Miss about school years?! Let's play!", margin: 4
       end
     end
 
     #stack do
-      fill lightsalmon
+      fill darkgoldenrod
       # widht & height values used from window_App size
-      rect(70, 120, self.width - 140, self.height - 240, corners=4)
+      rect(70, 110, self.width - 140, self.height - 200, corners=4)
     #end
 
-    flow left: self.width/2-self.width/10, top: self.height-110  do
-      button "Restart"
-      button "End"
-      button "Exit App"
+    flow left: self.width/2-self.width/5, top: self.height-80  do
+      button "Restart", width: 60, margin: 2
+      button "End", width: 60, margin: 2
+      button "Exit App", width: 60, margin: 2
     end
 
  end
