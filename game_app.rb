@@ -35,28 +35,37 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
       end
   end
 
+  def create_boxes
+    #flow do
+      @box1 = rect(105, self.height*0.45, @playzone.width/5, @playzone.height/5, corners=4, fill: white)
+      @box2 = rect(115+@playzone.width/5, self.height*0.45, @playzone.width/5,  @playzone.height/5, corners=4, fill: white)
+      @box3 = rect(130+(@playzone.width/5)*2, self.height*0.45, @playzone.width/5, @playzone.height/5, corners=4, fill: white)
+    #end
+  end
+
 
     stack(margin: 10) do
       flow do
-        btn_slotmachine = button "Slot machine", width: 80, margin: 4  do
+        btn_slotmachine = button "Slot machine", width: 90, margin: 4  do
           show_balance
           create_handle
+          create_boxes
         
 
         end
-        para "Try this classic casino game!", margin: 4
+        para strong "Try this classic casino game!", stroke: white, margin: 4
       end
 
       flow do
-        btn_tictac = button "Tic-Tac-Toe", width: 80, margin: 4 do
+        btn_tictac = button "Tic-Tac-Toe", width: 90, margin: 4 do
 
         end
-        para "Miss about school years?! Let's play!", margin: 4
+        para strong "Hmm.. Miss about school years?!", stroke: white, margin: 4
       end
     end
 
     # widht & height values used in % of window_App size
-    playzone = rect(70, 110, self.width*0.65, self.height*0.55, corners=4, fill: darkgoldenrod)
+    @playzone = rect(70, 110, self.width*0.65, self.height*0.55, corners=4, fill: darkgoldenrod)
 
     #control buttons
     flow(left: self.width*0.27, top: self.height-80)  do
