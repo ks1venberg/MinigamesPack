@@ -12,28 +12,33 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   end
 
   def create_handle
-    @rcol = rect(296, 145, self.width*0.015, self.height*0.40, corners=8, fill: red)
-    @handle = oval(left: self.width*0.72, top: 140, radius: 15, fill: lightslategray)
-    @handle.click {click_handle}
+    @rcol = rect(297, 145, self.width*0.02, self.height*0.33, corners=4, fill: orange..red)
+    @handle = oval(left: self.width*0.72, top: 140, radius: 15, fill: orangered)
+      @handle.click {click_handle}
+  end
+
+  def remove_handle
+    @handle.remove
+    @rcol.remove
   end
 
   def click_handle
-      anm = animate(30) do |i|
-        @handle.top += 30
+      @anm = animate(30) do |frame|
+        @handle.top += 40
           if @handle.top >= 300
             @handle.displace(0, -160)
-            #@rcol.remove
-            anm.stop
+            @anm.stop
+            #delete handle & create new one to restart animation
+            remove_handle
+            create_handle
           end
-      anm.start
       end
-
   end
 
 
     stack(margin: 10) do
       flow do
-        btn_slotmachine = button "Slot machine", width: 80 do
+        btn_slotmachine = button "Slot machine", width: 80, margin: 4  do
           show_balance
           create_handle
         
@@ -43,7 +48,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
       end
 
       flow do
-        btn_tictac = button "Tic-Tac-Toe", width: 80 do
+        btn_tictac = button "Tic-Tac-Toe", width: 80, margin: 4 do
 
         end
         para "Miss about school years?! Let's play!", margin: 4
