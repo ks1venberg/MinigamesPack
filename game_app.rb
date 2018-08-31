@@ -6,6 +6,22 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   background darkgreen
 
   # Methods and variables _________________________________________________________________________
+  def sizes
+    # variables and coordinates for boxes in playzone 
+    @xplayleft = @playzone.left
+    @yplaytop = @playzone.top
+    @yplaymid = @playzone.height / 2
+    
+    @xselfmid = self.width*0.5
+    @yselfmid = self.height*0.5
+
+    @boxwidth = @playzone.width / 5
+    @boxheight = @playzone.height / 5
+    @step = 10
+
+    #@xleft = ("#{@playzone.left}").to_i + 30
+  end
+
   def show_balance
     balance = 200
     bal_msg = para "Your balance: ", strong(balance.to_s), align: 'center', top: 80
@@ -29,43 +45,43 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
             @handle.displace(0, -160)
             @anm.stop
             #delete handle & create new one to restart animation
-            remove_handle
-            create_handle
+              remove_handle
+              create_handle
           end
       end
   end
 
   def create_boxes
+    sizes
     #flow do
-      @box1 = rect(105, self.height*0.45, @playzone.width/5, @playzone.height/5, corners=4, fill: white)
-      @box2 = rect(115+@playzone.width/5, self.height*0.45, @playzone.width/5,  @playzone.height/5, corners=4, fill: white)
-      @box3 = rect(130+(@playzone.width/5)*2, self.height*0.45, @playzone.width/5, @playzone.height/5, corners=4, fill: white)
+      @box1 = rect(@xplayleft, @yplaymid, @boxwidth, @boxwidth, corners=4, fill: white)
+      @box2 = rect(???, @yplaymid, @boxwidth,  @boxwidth, corners=4, fill: white)
+      @box3 = rect(???, @yplaymid, @boxwidth, @boxwidth, corners=4, fill: white)
     #end
   end
-
-
+ 
     stack(margin: 10) do
-      flow do
-        btn_slotmachine = button "Slot machine", width: 90, margin: 4  do
+      flow(margin: 2) do
+        btn_slotmachine = button "Slot machine", width: 90, heigth: 35, margin_right: 4 do
           show_balance
           create_handle
           create_boxes
         
 
         end
-        para strong "Try this classic casino game!", stroke: white, margin: 4
+        para strong "Play this classic casino game!", stroke: white
       end
 
-      flow do
-        btn_tictac = button "Tic-Tac-Toe", width: 90, margin: 4 do
+      flow(margin: 2) do
+        btn_tictac = button "Tic-Tac-Toe", width: 90, heigth: 35, margin_right: 4 do
 
         end
-        para strong "Hmm.. Miss about school years?!", stroke: white, margin: 4
+        para strong "Miss about school years? Try it!", stroke: white
       end
     end
 
     # widht & height values used in % of window_App size
-    @playzone = rect(70, 110, self.width*0.65, self.height*0.55, corners=4, fill: darkgoldenrod)
+    @playzone = rect(70, 110, self.width*0.65, self.height*0.60, corners=4, fill: darkgoldenrod)
 
     #control buttons
     flow(left: self.width*0.27, top: self.height-80)  do
