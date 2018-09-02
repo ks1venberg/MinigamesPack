@@ -7,17 +7,22 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
   # Methods and variables _________________________________________________________________________
   def sizes
-    # variables and coordinates for boxes in playzone 
+    # variables and coordinates for boxes in playzone
     @xplayleft = @playzone.left
     @yplaytop = @playzone.top
-    @yplaymid = @playzone.height / 2
+
+    @boxwidth = @playzone.width / 5
+    @boxheight = @boxwidth
+    @step = 10
+
+    @yplaycentr = @yplaytop + @playzone.height / 2 - @boxwidth / 2
+    @xboxleft = @xplayleft + @step*3
+
+
+
     
     @xselfmid = self.width*0.5
     @yselfmid = self.height*0.5
-
-    @boxwidth = @playzone.width / 5
-    @boxheight = @playzone.height / 5
-    @step = 10
 
     #@xleft = ("#{@playzone.left}").to_i + 30
   end
@@ -53,11 +58,14 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
   def create_boxes
     sizes
-    #flow do
-      @box1 = rect(@xplayleft, @yplaymid, @boxwidth, @boxwidth, corners=4, fill: white)
-      @box2 = rect(???, @yplaymid, @boxwidth,  @boxwidth, corners=4, fill: white)
-      @box3 = rect(???, @yplaymid, @boxwidth, @boxwidth, corners=4, fill: white)
-    #end
+
+      1.upto(3) do |i|
+         @box = ''
+         @box = @box<<i
+        @box = rect(@xboxleft, @yplaycentr, @boxwidth, @boxheight, corners=4, fill: white)
+        @xboxleft += (@boxwidth*i + @step)
+      end
+
   end
  
     stack(margin: 10) do
@@ -81,7 +89,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     end
 
     # widht & height values used in % of window_App size
-    @playzone = rect(70, 110, self.width*0.65, self.height*0.60, corners=4, fill: darkgoldenrod)
+    @playzone = rect(70, 110, self.width*0.65, self.height*0.55, corners=4, fill: darkgoldenrod)
 
     #control buttons
     flow(left: self.width*0.27, top: self.height-80)  do
