@@ -7,7 +7,10 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   # Methods and variables _________________________________________________________________________
   @slotboxes = {}
   @tictboxes = {}
-  @balance = nil
+  #@balance = 0
+
+  #attr_accessor :balance
+  #@balance = 0
 
   def sizes
     # size of general layout
@@ -30,7 +33,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   end
 
   def show_balance
-    c = 200
+    @balance = 200
     @bal_msg = para "Your balance: ", strong(@balance.to_s), align: 'center', top: 80
   end
 
@@ -58,9 +61,18 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
       end
   end
 
+  def g1start_alert
+    alert(
+    "    Three equal numbers gives you + 10$
+    Magic combi (777, 333, 555) gives you +100$
+    Different numbers takes - 5$
+    Three zeroes - you`re bancrupt\n
+      \tGood luck!")
+  end
+
   def create_boxes
     sizes
-      if @balance == nil
+      if @balance != nil
         1.upto(3) do |i|
 
           box = rect(@xboxleft, @yplaycenter, @boxwidth, @boxheight, corners=4, fill: white)
@@ -77,7 +89,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
           show_balance
           create_handle
           create_boxes
-          #slot_alert
+          g1start_alert
         
 
         end
