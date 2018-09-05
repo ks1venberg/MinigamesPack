@@ -72,15 +72,26 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
   def create_boxes
     sizes
-      if @balance != nil
-        1.upto(3) do |i|
-
+    @z=9
+      if @balance
+        1.upto @z do
+          if @z === 4 || @z === 6
+              @yplaycenter = (@yplaycenter + @boxwidth + @step)
+              box = rect(@xboxleft, @yplaycenter, @boxwidth, @boxheight, corners=4, fill: white)
+          end  
           box = rect(@xboxleft, @yplaycenter, @boxwidth, @boxheight, corners=4, fill: white)
-          @slotboxes["box"<<i.to_s] = "#{box.left}, #{box.top}"
+          # here is creatin array with boxes names and their coordinates
+          @slotboxes["box"<<@z.to_s] = "#{box.left}, #{box.top}"
           @xboxleft = ("#{box.left}".to_i + @boxwidth + @step)
-      end
+            # case @ii
+            #   when 3
+            #     @yplaycenter = @yplaycenter + @boxwidth + @step
+            # end
+      # else
+        # i = 9
+        # @yplaycenter = @yboxtop 
         end
-
+      end
   end
  
     stack(margin: 10) do
@@ -98,7 +109,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
       flow(margin: 2) do
         btn_tictac = button "Tic-Tac-Toe", width: 90, heigth: 35, margin_right: 4 do
-
+          create_boxes
         end
         para strong "Miss about school years? Try it!", stroke: white
       end
