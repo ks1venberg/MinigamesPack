@@ -5,12 +5,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   # Main layout ___________________________________________________________________________________
   background darkgreen
   # Methods and variables _________________________________________________________________________
-  @slotboxes = {}
-  @tictboxes = {}
-  #@balance = 0
-
-  #attr_accessor :balance
-  #@balance = 0
+  @boxes = {}
 
   def sizes
     # size of general layout
@@ -29,7 +24,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
       @yplaycenter = @yplaytop + @playzone.height / 2 - @boxwidth / 2
       @xboxleft = @xplayleft + @step*3
     # above param used only for TicTacToe
-      @yboxtop = @yplaycenter - @boxheight*1.5 - @step
+      @yboxtop = @yplaycenter - @boxheight - @step
   end
 
   def show_balance
@@ -72,26 +67,21 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
   def create_boxes
     sizes
-    @z=9
-      if @balance
-        1.upto @z do
-          if @z === 4 || @z === 6
-              @yplaycenter = (@yplaycenter + @boxwidth + @step)
-              box = rect(@xboxleft, @yplaycenter, @boxwidth, @boxheight, corners=4, fill: white)
-          end  
+       # first, is to check wich game has started and so decide about 1st box position
+       # @balance variable assigned only in Slot machine
+      @yplaycenter = @yboxtop if !@balance
+        1.upto 9 do |z|
           box = rect(@xboxleft, @yplaycenter, @boxwidth, @boxheight, corners=4, fill: white)
-          # here is creatin array with boxes names and their coordinates
-          @slotboxes["box"<<@z.to_s] = "#{box.left}, #{box.top}"
+           # here is creating array with boxes names & coordinates
+          @boxes["box"<<z.to_s] = "#{box.left}, #{box.top}"
+           # moving boxes over the playzone
           @xboxleft = ("#{box.left}".to_i + @boxwidth + @step)
-            # case @ii
-            #   when 3
-            #     @yplaycenter = @yplaycenter + @boxwidth + @step
-            # end
-      # else
-        # i = 9
-        # @yplaycenter = @yboxtop 
+             # change x,y when row is ended
+             @xboxleft = (@xplayleft + @step*3) if (z == 3 || z == 6)
+             @yplaycenter += (@boxwidth + @step) if (z == 3 || z == 6)
+           # end loop after 3rd box created (rule for Slot machine)
+          break if @balance && z == 3
         end
-      end
   end
  
     stack(margin: 10) do
