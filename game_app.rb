@@ -45,6 +45,12 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
   def click_handle
       @anm = animate(30) do |frame|
+        @boxes.each_value do |value|
+          value.each do |x, y|
+            num1 = rand(0..9)
+            para strong = num1, left: @xboxleft, top: @yplaycenter, margin: 3
+          end
+        end
         @handle.top += 40
           if @handle.top >= 300
             @handle.displace(0, -160)
@@ -77,7 +83,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
         1.upto 9 do |z|
           box = rect(@xboxleft, @yplaycenter, @boxwidth, @boxheight, corners=4, fill: white)
            # here is creating array with boxes names & coordinates
-          @boxes["box"<<z.to_s] = "#{box.left}, #{box.top}"
+          @boxes["box"<<z.to_s] = ["#{box.left}, #{box.top}"]
            # moving boxes over the playzone
           @xboxleft = ("#{box.left}".to_i + @boxwidth + @step)
             # change x,y when row is ended
