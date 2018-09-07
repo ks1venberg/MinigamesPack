@@ -57,12 +57,16 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   end
 
   def g1start_alert
-    alert(
-    "    Three equal numbers gives you + 10$
-    Magic combi (777, 333, 555) gives you +100$
-    Different numbers takes - 5$
-    Three zeroes - you`re bancrupt\n
-      \tGood luck!")
+    timer 1 do
+      stack margin_left: 2, align:'left' do
+        alert(
+        "       Three equal numbers gives you +10$
+        Magic combi (777, 333, 555) gives you +100$
+        Different numbers takes -5$
+        Three zeroes - you`re bancrupt\n
+        Push the handle, and good luck!")
+      end
+    end
   end
 
   def create_boxes
@@ -76,9 +80,9 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
           @boxes["box"<<z.to_s] = "#{box.left}, #{box.top}"
            # moving boxes over the playzone
           @xboxleft = ("#{box.left}".to_i + @boxwidth + @step)
-             # change x,y when row is ended
-             @xboxleft = (@xplayleft + @step*3) if (z == 3 || z == 6)
-             @yplaycenter += (@boxwidth + @step) if (z == 3 || z == 6)
+            # change x,y when row is ended
+            @xboxleft = (@xplayleft + @step*3) if (z == 3 || z == 6)
+            @yplaycenter += (@boxwidth + @step) if (z == 3 || z == 6)
            # end loop after 3rd box created (rule for Slot machine)
           break if @balance && z == 3
         end
