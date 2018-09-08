@@ -12,19 +12,22 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     @xselfmid = self.width*0.5
     @yselfmid = self.height*0.5
 
+    # size of playzone (260x242 px from 400x440)
+    @plwidth = self.width*0.65
+    @plheight = self.height*0.55
+
     # variables and coordinates for boxes in playzone
     #borders of playzone
       @xplayleft = @playzone.left
       @yplaytop = @playzone.top
-    #box params
-      @boxwidth = @playzone.width / 5
-      @boxheight = @boxwidth
+    #box params (52 px)
+      @boxside = @plwidth / 5
       @step = 10
     # start position for adding boxes to playzone
-      @yplaycenter = @yplaytop + @playzone.height / 2 - @boxwidth / 2
+      @yplaycenter = @yplaytop + @plheight/2 - @boxside/2
       @xboxleft = @xplayleft + @step*3
     # above param used only for TicTacToe
-      @yboxtop = @yplaycenter - @boxheight - @step
+      @yboxtop = @yplaycenter - @boxside - @step
   end
 
   def show_balance
@@ -47,23 +50,30 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
       @anm = animate(30) do |frame|
         @boxes.each_value do |value|
           value.each do |x, y|
-            num1 = rand(0..9)
-            para strong = num1, left: @xboxleft, top: @yplaycenter, margin: 3
+            @num = para strong(rand(0..9).to_s), size: 36, left: x.to_i + @boxside*0.3, top: @yplaycenter
           end
         end
         @handle.top += 40
-          if @handle.top >= 300
-            @handle.displace(0, -160)
+
+        if @handle.top >= 300
+          @handle.displace(0, -160)
+
             @anm.stop
-            #delete handle & create new one to restart animation
+            @num.clear
+            # @boxes.each_value do |value|
+            #   value.each do |x, y|
+            #     @num = para strong("0"), size: 36, left: x.to_i + @boxside*0.3, top: @yplaycenter
+            #   end
+            # end
+              #delete handle & create new one to restart animation
               remove_handle
               create_handle
-          end
+        end
       end
   end
 
   def g1start_alert
-    timer 1 do
+    timer 0.5 do
       stack margin_left: 2, align:'left' do
         alert(
         "       Three equal numbers gives you +10$
@@ -81,16 +91,16 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
        # @balance variable assigned only in Slot machine
       @yplaycenter = @yboxtop if !@balance
         1.upto 9 do |z|
-          box = rect(@xboxleft, @yplaycenter, @boxwidth, @boxheight, corners=4, fill: white)
+          box = rect(@xboxleft, @yplaycenter, @boxside, @boxside, corners=4, fill: white)
            # here is creating array with boxes names & coordinates
           @boxes["box"<<z.to_s] = ["#{box.left}, #{box.top}"]
            # moving boxes over the playzone
-          @xboxleft = ("#{box.left}".to_i + @boxwidth + @step)
+          @xboxleft = ("#{box.left}".to_i + @boxside + @step)
+            # end loop after 3rd box created (rule for Slot machine)
+            break if @balance && z == 3
             # change x,y when row is ended
             @xboxleft = (@xplayleft + @step*3) if (z == 3 || z == 6)
-            @yplaycenter += (@boxwidth + @step) if (z == 3 || z == 6)
-           # end loop after 3rd box created (rule for Slot machine)
-          break if @balance && z == 3
+            @yplaycenter += (@boxside + @step) if (z == 3 || z == 6)
         end
   end
  
