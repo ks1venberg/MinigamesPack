@@ -51,6 +51,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
         @boxes.each_value do |value|
           value.each do |x, y|
             @num = para strong(rand(0..9).to_s), size: 36, left: x.to_i + @boxside*0.3, top: @yplaycenter
+            # @num.replace "0"
           end
         end
         @handle.top += 40
@@ -59,7 +60,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
           @handle.displace(0, -160)
 
             @anm.stop
-            @num.clear
+            # @num.clear
             # @boxes.each_value do |value|
             #   value.each do |x, y|
             #     @num = para strong("0"), size: 36, left: x.to_i + @boxside*0.3, top: @yplaycenter
@@ -88,7 +89,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   def create_boxes
     sizes
        # first, is to check wich game has started and so decide about 1st box position
-       # @balance variable assigned only in Slot machine
+       # @balance variable assigned only in Slot machine, so if its true- there will be created 3 boxes in the middle
       @yplaycenter = @yboxtop if !@balance
         1.upto 9 do |z|
           box = rect(@xboxleft, @yplaycenter, @boxside, @boxside, corners=4, fill: white)
@@ -96,11 +97,12 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
           @boxes["box"<<z.to_s] = ["#{box.left}, #{box.top}"]
            # moving boxes over the playzone
           @xboxleft = ("#{box.left}".to_i + @boxside + @step)
-            # end loop after 3rd box created (rule for Slot machine)
-            break if @balance && z == 3
-            # change x,y when row is ended
-            @xboxleft = (@xplayleft + @step*3) if (z == 3 || z == 6)
-            @yplaycenter += (@boxside + @step) if (z == 3 || z == 6)
+
+          # end loop after 3rd box created (rule for Slot machine)
+          break if @balance && z == 3
+          # change x,y when row is ended
+          @xboxleft = (@xplayleft + @step*3) if (z == 3 || z == 6)
+          @yplaycenter += (@boxside + @step) if (z == 3 || z == 6)
         end
   end
  
