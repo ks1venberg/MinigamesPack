@@ -6,6 +6,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   background darkgreen
   # Methods and variables _________________________________________________________________________
   @boxes = {}
+  @syms = {}
 
   def sizes
     # size of general layout
@@ -47,30 +48,32 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   end
 
   def click_handle
-      @anm = animate(30) do |frame|
-        @boxes.each_value do |value|
-          value.each do |x, y|
-            @num = para strong(rand(0..9).to_s), size: 36, left: x.to_i + @boxside*0.3, top: @yplaycenter
-            # @num.replace "0"
-          end
-        end
-        @handle.top += 40
-
-        if @handle.top >= 300
-          @handle.displace(0, -160)
-
-            @anm.stop
-            # @num.clear
-            # @boxes.each_value do |value|
-            #   value.each do |x, y|
-            #     @num = para strong("0"), size: 36, left: x.to_i + @boxside*0.3, top: @yplaycenter
-            #   end
-            # end
-              #delete handle & create new one to restart animation
-              remove_handle
-              create_handle
+    s = stack left: 120, top: @yplaycenter do
+      @boxes.each_value do |value|
+        value.each do |x, y|
+          i = 1.upto(3)
+          @syms["@sym#{i}"] = para strong(rand(0..9).to_s), size: 36, left: x.to_f + @boxside*0.25, top: @yplaycenter
         end
       end
+    end
+
+    @anm = animate(30) do |frame|
+
+      @syms.each_value do |value|
+        value.replace rand(0..9).to_s
+      end
+
+      @handle.top += 40
+
+      if @handle.top >= 300
+        @handle.displace(0, -160)
+
+        @anm.stop
+        #delete handle & create new one to restart animation
+        remove_handle
+        create_handle
+      end
+    end
   end
 
   def g1start_alert
