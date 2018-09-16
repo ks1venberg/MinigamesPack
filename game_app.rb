@@ -11,6 +11,10 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   @stackplay = stack
   @stackboxes = stack
   @stacksyms = stack
+  @stackhandler = stack
+
+  @rcol = rect
+  @handle = oval
 
 
   def sizes
@@ -36,33 +40,50 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
       @yboxtop = @yplaycenter - @boxside - @step
   end
 
+  def slotmach_elements
+    @stackplay.clear{
+    # @stackplay = stack(left: (self.width - self.width*0.65)/2, top: 95, width: self.width*0.65, height: self.height*0.55) do
+      create_playzone
+      show_balance
+      create_boxes
+      create_handle
+      g1start_alert}
+    #end
+  end
+
   def create_playzone
-    @stackplay = stack(left: (self.width - self.width*0.65)/2 - 10, top: 95) do
+    #@stackplay = stack(left: (self.width - self.width*0.65)/2 - 10, top: 95) do
       @playzone = rect(0, 0, self.width*0.65, self.height*0.55, corners=4, fill: darkgoldenrod)
-    end
+    #end
+    sizes
   end
 
   def show_balance
     @balance = 200
-    @bal_msg = para "Your balance: ", strong(@balance.to_s), align: 'center', top: 80
+    @bal_msg = para "Your balance: ", strong(@balance.to_s), align: 'center', top: 10
   end
 
   def create_handle
-    @rcol = rect(297, 145, self.width*0.02, self.height*0.33, corners=4, fill: orange..red)
-    @handle = oval(left: self.width*0.72, top: 140, radius: 15, fill: orangered)
-      @handle.click {click_handle}
+    @stackhandler = stack(left: 0, top: 0) do
+      @rcol = rect(229, 50, self.width*0.02, self.height*0.33, corners=4, fill: orange..red)
+      @handle = oval(220, 45, radius: 15, fill: orangered)
+    #@rcol = rect(297, 145, self.width*0.02, self.height*0.33, corners=4, fill: orange..red)
+    #@handle = oval(left: self.width*0.72, top: 140, radius: 15, fill: orangered)
+      @handle.click{start_slotgame}
+    end
   end
 
   def remove_handle
-    @handle.remove
-    @rcol.remove
+    @handle.clear{oval(220, 55, radius: 15, fill: orangered)}
+    @rcol.clear{rect(225, 50, self.width*0.02, self.height*0.33, corners=4, fill: orange..red)}
   end
 
-  def click_handle
-    @stacksyms = stack left: 120, top: @yplaycenter do
+  def start_slotgame
+    @stacksyms = stack(left: @xplayleft + 68, top: @yplaycenter + 10) do
       @boxes.each_value do |value|
         value.each do |x, y|
           i = 1.upto(3)
+           #left: x.to_f + @boxside*0.25
           @syms["@sym#{i}"] = para strong(rand(0..9).to_s), size: 36, left: x.to_f + @boxside*0.25, top: @yplaycenter
         end
       end
@@ -76,13 +97,13 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
       @handle.top += 40
 
-      if @handle.top >= 300
+      if @handle.top >= 190
         @handle.displace(0, -160)
 
         @anm.stop
-        #delete handle & create new one to restart animation
-        remove_handle
-        create_handle
+        #clear handle & create new one to restart animation
+        @stackhandler.clear{create_handle}
+
       end
     end
   end
@@ -126,33 +147,30 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
       flow(margin: 2) do
         btn_slotmachine = button "Slot machine", width: 90, heigth: 35, margin_right: 4 do
-          show_balance
-          create_handle
-          create_boxes
-          g1start_alert
+          slotmach_elements
         end
         para strong "Play this classic casino game!", stroke: white
       end
 
       flow(margin: 2) do
         btn_tictac = button "Tic-Tac-Toe", width: 90, heigth: 35, margin_right: 4 do
-          #@stackplay.remove
+
           @stackplay.clear{create_playzone} if @boxes.size == 3
-          #@balance = nil
-          #create_boxes
+
         end
         para strong "Miss about school years? Try it!", stroke: white
       end
 
       # widht & height values used in % of window_App size
-      # @stackplay = stack do
-        create_playzone
-        #@playzone = rect(70, 30, self.width*0.65, self.height*0.55, corners=4, fill: darkgoldenrod)
-      # end
+      @stackplay = stack(left: (self.width - self.width*0.65)/2 - 10, top: 95, width: self.width*0.65, height: self.height*0.55) do
+        rect(0, 0, self.width*0.65, self.height*0.55, corners=4, fill: darkgoldenrod)
+      end
 
       #control buttons
       flow(left: self.width*0.27, top: self.height-80)  do
-        button "Restart", width: 60, margin: 2
+        button "Restart", width: 60, margin: 2 do
+          @stackplay.remove
+        end
         button "Exit App", width: 60, margin: 2
       end
 
