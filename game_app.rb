@@ -6,13 +6,14 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   background darkgreen
   # Methods and variables _________________________________________________________________________
   @boxes = {}
-  @syms = {}
-  @playzone = rect
+  @objsyms = {}
+  @nums = []
+  @i = 0
   @stackplay = stack
   @stackboxes = stack
   @stacksyms = stack
   @stackhandler = stack
-
+  @playzone = rect
   @rcol = rect
   @handle = oval
 
@@ -46,17 +47,27 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
       show_balance
       create_boxes
       create_handlesystem
+      create_stacksym
       g1start_alert}
-  end
-
-  def create_playzone
-      @playzone = rect(0, 0, self.width*0.65, self.height*0.55, corners=4, fill: darkgoldenrod)
-    sizes
   end
 
   def show_balance
     @balance = 200
     @bal_msg = para "Your balance: ", strong(@balance.to_s), align: 'center', top: 10
+  end
+
+  def generate_sym
+    rand(0..9).to_s
+  end
+
+  def clear_slothashes
+    @numhash = {}
+    @objsyms = {}
+  end
+
+  def create_playzone
+      @playzone = rect(0, 0, self.width*0.65, self.height*0.55, corners=4, fill: darkgoldenrod)
+    sizes
   end
 
   def create_handlesystem
@@ -65,49 +76,62 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
       @handle = oval(220, 45, radius: 15, fill: orangered)
       @handle.click{start_slotmachine}
     end
+  end
+
+  def create_stacksym
     @stacksyms = stack(left: 0, top: 0) do
-      @syms = {}
+      @objsyms = {}
     end
   end
 
   def start_slotmachine
-    i = 0
-    @stacksyms = stack(left: @xplayleft + 68, top: @yplaycenter + 10) do
+
+    clear_slothashes
+    @stacksyms.clear{
       @boxes.each_value do |value|
         value.each do |x, y|
-          i += 1
-          @syms["@sym"+i.to_s] = para strong(rand(0..9).to_s), size: 36, left: x.to_f + @boxside*0.25, top: @yplaycenter
+          @i += 1 #hash under - is hash with animated objects-numbers
+          @objsyms["@sym"+@i.to_s] = para strong(""), size: 36, left: x.to_f + @boxside*0.25, top: @yplaycenter
         end
-      end
-    end
+      end}
 
     @anm = animate(30) do |frame|
-      @syms.each_value do |value|
-        value.replace strong rand(0..9).to_s
+      @objsyms.each_value do |value|
+        value.replace strong (generate_sym)
       end
-
       @handle.top += 40
 
       if @handle.top >= 190
         @handle.displace(0, -160)
+        
         @anm.stop
+        # here is created final hash only with random numbers (not with objects like @objsyms)
+        @objsyms.each do |key, value|
+          x = generate_sym
+          value.replace strong (x)
+          @nums << x
+        end
+        # convert array into string, then to int
+        @nums = @nums.join
+        @nums.to_i
+
+        slomachine_calc
+        @stackbalance.clear{show_balance}
+
         #clear handle & create new one to restart animation
         @stackhandler.clear{create_handlesystem}
-        timer 0.5 do
-          alert(@syms.inspect +
-            "#{@syms.values}".to_s +
-            @syms.values[0].to_s)
-        end
       end
     end
+
   end
 
   def g1start_alert
     timer 0.5 do
       stack margin_left: 2, align:'left' do
         alert(
-        "       Three equal numbers gives you +10$
+        "       Three equal numbers gives you +50$
         Magic combi (777, 333, 555) gives you +100$
+        Mirror-like combi (e.g. 131, 454) gives you +5$
         Different numbers takes -5$
         Three zeroes - you`re bancrupt\n
         Push the handle, and good luck!")
