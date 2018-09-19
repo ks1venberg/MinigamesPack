@@ -9,6 +9,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   @objsyms = {}
   @nums = []
   @i = 0
+  @balance = 200 #start balance in slot machine
   @stackplay = stack
   @stackboxes = stack
   @stacksyms = stack
@@ -52,8 +53,9 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   end
 
   def show_balance
-    @balance = 200
-    @bal_msg = para "Your balance: ", strong(@balance.to_s), align: 'center', top: 10
+    @stackbalance = stack(left: 0, top: 0) do
+      @bal_msg = para "Your balance: ", strong(@balance.to_s), align: 'center', top: 10
+    end
   end
 
   def generate_sym
@@ -61,7 +63,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   end
 
   def clear_slothashes
-    @numhash = {}
+    @nums = []
     @objsyms = {}
   end
 
@@ -85,17 +87,18 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   end
 
   def start_slotmachine
-
     clear_slothashes
+    
     @stacksyms.clear{
       @boxes.each_value do |value|
         value.each do |x, y|
-          @i += 1 #hash under - is hash with animated objects-numbers
+          @i += 1 #@objsyms - is hash filled with animated para-objects with numbers
           @objsyms["@sym"+@i.to_s] = para strong(""), size: 36, left: x.to_f + @boxside*0.25, top: @yplaycenter
         end
       end}
 
-    @anm = animate(30) do |frame|
+    @anm = animate(30) do |frame| # ANIMATION BLOCK ____________________________________________________________
+      
       @objsyms.each_value do |value|
         value.replace strong (generate_sym)
       end
@@ -105,24 +108,49 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
         @handle.displace(0, -160)
         
         @anm.stop
-        # here is created final hash only with random numbers (not with objects like @objsyms)
+        # here is created final array with random numbers (not with objects like @objsyms)
         @objsyms.each do |key, value|
           x = generate_sym
           value.replace strong (x)
           @nums << x
         end
-        # convert array into string, then to int
-        @nums = @nums.join
-        @nums.to_i
 
-        slomachine_calc
-        @stackbalance.clear{show_balance}
+        slotmachine_calc 
 
-        #clear handle & create new one to restart animation
-        @stackhandler.clear{create_handlesystem}
+        if @balance == 0
+          @stackbalance.clear{show_balance}
+            timer 0.5 do
+              alert("Try again or play Tic-Tac-Toe")
+              @stackplay.clear{create_playzone}
+              @balance = 200
+            end
+        else
+          @stackbalance.clear{show_balance}
+          #clear handle & create new one to restart animation
+          @stackhandler.clear{create_handlesystem}
+        end
       end
-    end
+    end  #_______________________________________________________________________________________________________
 
+  end
+
+  def slotmachine_calc
+
+    @nums = @nums.join                                  # convert array into string
+    if @nums == "000"                                   # all zeroes - bancrupt
+      @balance = 0
+    elsif @nums[0] == @nums[2] && (@nums[1] != @nums[2]) && (@nums.to_i != 0)     # check mirror-like combinations
+      @balance += 5
+    else
+                                                        # check combinations with array[integer] 
+      @nums = @nums.to_i                                # convert array into string
+      combihash = {111 =>50, 222 =>50, 333 =>100, 444 =>50, 555 =>100, 666 =>50, 777 =>100, 888 =>50, 999 =>50}
+        if combihash[@nums]
+          @balance += combihash[@nums]
+        else
+          @balance -= 5                                 # for different numbers
+        end
+    end
   end
 
   def g1start_alert
