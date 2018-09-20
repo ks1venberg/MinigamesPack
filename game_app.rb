@@ -1,33 +1,21 @@
 require 'shoes'
 
 Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
+  background darkgreen # main layout color
   
-  # Main layout ___________________________________________________________________________________
-  background darkgreen
   # Methods and variables _________________________________________________________________________
+  
+  # size of playzone (260x242 px from 400x440)
+  @plwidth = self.width*0.65
+  @plheight = self.height*0.55
+
   @boxes = {}
   @objsyms = {}
   @nums = []
   @i = 0
   @balance = 200 #start balance in slot machine
-  @stackplay = stack
-  @stackboxes = stack
-  @stacksyms = stack
-  @stackhandler = stack
-  @playzone = rect
-  @rcol = rect
-  @handle = oval
-
 
   def sizes
-    # size of general layout
-    @xselfmid = self.width*0.5
-    @yselfmid = self.height*0.5
-
-    # size of playzone (260x242 px from 400x440)
-    @plwidth = self.width*0.65
-    @plheight = self.height*0.55
-
     # variables and coordinates for boxes in playzone
     #borders of playzone
       @xplayleft = @playzone.left
@@ -58,18 +46,31 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     end
   end
 
-  def generate_sym
-    rand(0..9).to_s
-  end
-
-  def clear_slothashes
-    @nums = []
-    @objsyms = {}
-  end
-
   def create_playzone
-      @playzone = rect(0, 0, self.width*0.65, self.height*0.55, corners=4, fill: darkgoldenrod)
+      @playzone = rect(0, 0, @plwidth, @plheight, corners=4, fill: darkgoldenrod)
     sizes
+  end
+
+  def create_boxes
+  sizes
+     # first, is to check wich game has started and so decide about 1st box position
+     # @balance variable assigned only in Slot machine, so if its true- there will be created 3 boxes in the middle
+    @stackboxes = stack(left: @xplayleft, top: @yplaytop) do
+      @yplaycenter = @yboxtop if !@balance
+        1.upto 9 do |z|
+          box = rect(@xboxleft, @yplaycenter, @boxside, @boxside, corners=4, fill: white)
+           # here is creating array with boxes names & coordinates
+          @boxes["box"<<z.to_s] = ["#{box.left}, #{box.top}"]
+           # moving boxes over the playzone
+          @xboxleft = ("#{box.left}".to_i + @boxside + @step)
+
+          # end loop after 3rd box created (rule for Slot machine)
+          break if @balance && z == 3
+          # change x,y when row is ended
+          @xboxleft = (@xplayleft + @step*3) if (z == 3 || z == 6)
+          @yplaycenter += (@boxside + @step) if (z == 3 || z == 6)
+        end
+    end
   end
 
   def create_handlesystem
@@ -84,6 +85,15 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     @stacksyms = stack(left: 0, top: 0) do
       @objsyms = {}
     end
+  end
+
+  def generate_sym
+    rand(0..9).to_s
+  end
+
+  def clear_slothashes
+    @nums = []
+    @objsyms = {}
   end
 
   def start_slotmachine
@@ -108,7 +118,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
         @handle.displace(0, -160)
         
         @anm.stop
-        # here is created final array with random numbers (not with objects like @objsyms)
+        # here is symbols changed last time,then created final array with random numbers - @nums (not with objects like @objsyms)
         @objsyms.each do |key, value|
           x = generate_sym
           value.replace strong (x)
@@ -119,11 +129,11 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
         if @balance == 0
           @stackbalance.clear{show_balance}
-            timer 0.5 do
-              alert("Try again or play Tic-Tac-Toe")
-              @stackplay.clear{create_playzone}
-              @balance = 200
-            end
+          timer 0.5 do
+            alert("Try again or play Tic-Tac-Toe")
+            @stackplay.clear{create_playzone}
+            @balance = 200
+          end
         else
           @stackbalance.clear{show_balance}
           #clear handle & create new one to restart animation
@@ -131,19 +141,16 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
         end
       end
     end  #_______________________________________________________________________________________________________
-
   end
 
   def slotmachine_calc
-
     @nums = @nums.join                                  # convert array into string
     if @nums == "000"                                   # all zeroes - bancrupt
       @balance = 0
     elsif @nums[0] == @nums[2] && (@nums[1] != @nums[2]) && (@nums.to_i != 0)     # check mirror-like combinations
       @balance += 5
     else
-                                                        # check combinations with array[integer] 
-      @nums = @nums.to_i                                # convert array into string
+      @nums = @nums.to_i                                # check combinations with array converted into integer
       combihash = {111 =>50, 222 =>50, 333 =>100, 444 =>50, 555 =>100, 666 =>50, 777 =>100, 888 =>50, 999 =>50}
         if combihash[@nums]
           @balance += combihash[@nums]
@@ -167,27 +174,6 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     end
   end
 
-  def create_boxes
-    sizes
-       # first, is to check wich game has started and so decide about 1st box position
-       # @balance variable assigned only in Slot machine, so if its true- there will be created 3 boxes in the middle
-      @stackboxes = stack(left: @xplayleft, top: @yplaytop) do
-        @yplaycenter = @yboxtop if !@balance
-          1.upto 9 do |z|
-            box = rect(@xboxleft, @yplaycenter, @boxside, @boxside, corners=4, fill: white)
-             # here is creating array with boxes names & coordinates
-            @boxes["box"<<z.to_s] = ["#{box.left}, #{box.top}"]
-             # moving boxes over the playzone
-            @xboxleft = ("#{box.left}".to_i + @boxside + @step)
-
-            # end loop after 3rd box created (rule for Slot machine)
-            break if @balance && z == 3
-            # change x,y when row is ended
-            @xboxleft = (@xplayleft + @step*3) if (z == 3 || z == 6)
-            @yplaycenter += (@boxside + @step) if (z == 3 || z == 6)
-          end
-      end
-  end
  
     stack(margin: 10) do
 
@@ -207,16 +193,14 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
         para strong "Miss about school years? Try it!", stroke: white
       end
 
-      # widht & height values used in % of window_App size
-      @stackplay = stack(left: (self.width - self.width*0.65)/2 - 10, top: 95, width: self.width*0.65, height: self.height*0.55) do
-        rect(0, 0, self.width*0.65, self.height*0.55, corners=4, fill: darkgoldenrod)
+      @stackplay = stack(left: (self.width - @plwidth)/2 - 10, top: 95, width: @plwidth, height: @plheight) do
+        rect(0, 0, @plwidth, @plheight, corners=4, fill: darkgoldenrod)
       end
 
       #control buttons
       flow(left: self.width*0.27, top: self.height-80)  do
         button "Restart", width: 60, margin: 2 do
           @stackplay.remove
-          #@stacksyms.remove
         end
         button "Exit App", width: 60, margin: 2
       end
