@@ -8,7 +8,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   # size of playzone (260x242 px from 400x440)
   @plwidth = self.width*0.65
   @plheight = self.height*0.55
-
+  # objects 
   @boxes = {}
   @objsyms = {}
   @nums = []
@@ -30,16 +30,10 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
       @yboxtop = @yplaycenter - @boxside - @step
   end
 
-  def load_slotmachine
-    @stackplay.clear{
-      create_playzone
-      show_balance
-      create_boxes
-      create_handlesystem
-      create_stacksym
-      g1start_alert}
+  def create_balance
+    @balance = 200 #start balance in slot machine
   end
-
+  
   def show_balance
     @stackbalance = stack(left: 0, top: 0) do
       @bal_msg = para "Your balance: ", strong(@balance.to_s), align: 'center', top: 10
@@ -53,8 +47,8 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
   def create_boxes
   sizes
-     # first, is to check wich game has started and so decide about 1st box position
-     # @balance variable assigned only in Slot machine, so if its true- there will be created 3 boxes in the middle
+    # first, is to check wich game has started and so decide about 1st box position
+    # @balance variable assigned only in Slot machine, so if its true- there will be created 3 boxes in the middle
     @stackboxes = stack(left: @xplayleft, top: @yplaytop) do
       @yplaycenter = @yboxtop if !@balance
         1.upto 9 do |z|
@@ -87,11 +81,11 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     end
   end
 
-  def generate_sym
+  def generate_sym    #random numbers for @stacksyms & @nums
     rand(0..9).to_s
   end
 
-  def clear_slothashes
+  def clear_slothashes    #clear objects on animation restart
     @nums = []
     @objsyms = {}
   end
@@ -102,15 +96,15 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     @stacksyms.clear{
       @boxes.each_value do |value|
         value.each do |x, y|
-          @i += 1 #@objsyms - is hash filled with animated para-objects with numbers
+          @i += 1                               #@objsyms - is hash filled with animated para-objects with numbers
           @objsyms["@sym"+@i.to_s] = para strong(""), size: 36, left: x.to_f + @boxside*0.25, top: @yplaycenter
         end
       end}
 
     @anm = animate(30) do |frame| # ANIMATION BLOCK ____________________________________________________________
       
-      @objsyms.each_value do |value|
-        value.replace strong (generate_sym)
+      @objsyms.each_value do |value|          
+        value.replace strong (generate_sym)             # here is animation working (replace "" with rand)
       end
       @handle.top += 40
 
@@ -125,7 +119,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
           @nums << x
         end
 
-        slotmachine_calc 
+        slotmachine_calc                                # method to count result
 
         if @balance == 0
           @stackbalance.clear{show_balance}
@@ -174,7 +168,18 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     end
   end
 
- 
+  def load_slotmachine
+  @stackplay.clear{
+    create_playzone       # main area containing all objects (for both games)
+    create_balance        # var @balance assigned (object creation depends from it)
+    show_balance          # row with balance
+    create_boxes          # filling playzone with white boxes (3 for Slot machine, 9 for Tic Tac Toe)
+    create_handlesystem   # create two elements to start & visualize animation
+    create_stacksym       # area where placed objects(para) & symbols(numbers)
+    g1start_alert}        # hello alert for Slot machine
+  end
+
+# Main layout _________________________________________________________________________________________________ 
     stack(margin: 10) do
 
       flow(margin: 2) do
@@ -198,13 +203,16 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
       end
 
       #control buttons
-      flow(left: self.width*0.27, top: self.height-80)  do
-        button "Restart", width: 60, margin: 2 do
+      flow(left: self.width*0.29, top: self.height-80)  do
+        button "Restart", width: 70, margin: 3 do
           @stackplay.remove
         end
-        button "Exit App", width: 60, margin: 2
+        button "Exit App", width: 70, margin: 3 do
+          exit
+        end
       end
 
     end
+# ______________________________________________________________________________________________________________
 
 end
