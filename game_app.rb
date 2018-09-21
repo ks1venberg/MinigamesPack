@@ -3,8 +3,8 @@ require 'shoes'
 Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   background darkgreen # main layout color
   
-  # Methods and variables _________________________________________________________________________
-  
+  # Methods and variables ========================================================================
+
   # size of playzone (260x242 px from 400x440)
   @plwidth = self.width*0.65
   @plheight = self.height*0.55
@@ -13,7 +13,9 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   @objsyms = {}
   @nums = []
   @i = 0
+  @userchoice = ""
 
+  # Common methods for both games ________________________________________________________________
   def sizes
     # variables and coordinates for boxes in playzone
     #borders of playzone
@@ -27,16 +29,6 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
       @xboxleft = @xplayleft + @step*3
     # above param used only for TicTacToe
       @yboxtop = @yplaycenter - @boxside - @step
-  end
-
-  def create_balance
-    @balance = 200 #start balance in slot machine
-  end
-  
-  def show_balance
-    @stackbalance = stack(left: 0, top: 0) do
-      @bal_msg = para "Your balance: ", strong(@balance.to_s), align: 'center', top: 10
-    end
   end
 
   def create_playzone
@@ -63,6 +55,18 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
           @xboxleft = (@xplayleft + @step*4) if (z == 3 || z == 6)
           @yplaycenter += (@boxside + @step) if (z == 3 || z == 6)
         end
+    end
+  end
+  # _______________________________________________________________________________________________
+
+  # Methods for Slot machine ======================================================================
+  def create_balance
+    @balance = 200 #start balance in slot machine
+  end
+  
+  def show_balance
+    @stackbalance = stack(left: 0, top: 0) do
+      @bal_msg = para "Your balance: ", strong(@balance.to_s), align: 'center', top: 10
     end
   end
 
@@ -100,7 +104,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
         end
       end}
 
-    @anm = animate(30) do |frame| # ANIMATION BLOCK ____________________________________________________________
+    @anm = animate(30) do |frame| # Animation block _________________________________
       
       @objsyms.each_value do |value|          
         value.replace strong (generate_sym)             # here is animation working (replace "" with rand)
@@ -111,11 +115,11 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
         @handle.displace(0, -160)
         
         @anm.stop
-        # here is symbols changed last time,then created final array with random numbers - @nums (not with objects like @objsyms)
+        # after animation stop symbols changed last time
         @objsyms.each do |key, value|
           x = generate_sym
           value.replace strong (x)
-          @nums << x
+          @nums << x                                    # then created final array with random numbers - @nums
         end
 
         slotmachine_calc                                # method to count result
@@ -133,14 +137,14 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
           @stackhandler.clear{create_handlesystem}
         end
       end
-    end  #_______________________________________________________________________________________________________
+    end                             #__________________________________________________
   end
 
   def slotmachine_calc
     @nums = @nums.join                                  # convert array into string
     if @nums == "000"                                   # all zeroes - bancrupt
-      @balance = 0
-    elsif @nums[0] == @nums[2] && (@nums[1] != @nums[2]) && (@nums.to_i != 0)     # check mirror-like combinations
+      @balance = 0                                      # elsif - checks mirror-like combinations
+    elsif @nums[0] == @nums[2] && (@nums[1] != @nums[2]) && (@nums.to_i != 0)
       @balance += 5
     else
       @nums = @nums.to_i                                # check combinations with array converted into integer
@@ -167,6 +171,20 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     end
   end
 
+  # Methods for Tic Tac Toe ==================================================================================
+  def create_choice
+    #@stackchoice = stack(left: @xplayleft, top: self.height*0.4) do
+      para "Choose your symbol:"
+      list_box items: ["X", "0"],
+        choose: "X" do |list|
+          @userchoice = list.text
+      end
+      #@userchoice = "0"
+    #end
+  end
+
+  # Summary methods for start games ___________________________________________________________________________
+
   def load_slotmachine
   @stackplay.clear{
     create_playzone       # main area containing all objects (for both games)
@@ -181,10 +199,13 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   def load_tictactoe
     @stackplay.clear{
     create_playzone
-    create_boxes}
+    create_boxes
+    create_choice
+    }
   end
 
-# Main layout _________________________________________________________________________________________________ 
+# =============================================================================================================
+# Main layout
     stack(margin: 10) do
 
       flow(margin: 2) do
@@ -199,6 +220,10 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
           load_tictactoe
         end
         para strong "Miss about school years? Try it!", stroke: white
+      end
+
+      @stackchoice = stack(left: 180, top: 40) do
+        rect(0,0,1,1, nofill)
       end
 
       @stackplay = stack(left: (self.width - @plwidth)/2 - 10, top: 95, width: @plwidth, height: @plheight) do
@@ -216,6 +241,6 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
       end
 
     end
-# ______________________________________________________________________________________________________________
+# =============================================================================================================
 
 end
