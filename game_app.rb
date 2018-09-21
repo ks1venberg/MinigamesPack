@@ -13,7 +13,6 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   @objsyms = {}
   @nums = []
   @i = 0
-  @balance = 200 #start balance in slot machine
 
   def sizes
     # variables and coordinates for boxes in playzone
@@ -50,18 +49,18 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     # first, is to check wich game has started and so decide about 1st box position
     # @balance variable assigned only in Slot machine, so if its true- there will be created 3 boxes in the middle
     @stackboxes = stack(left: @xplayleft, top: @yplaytop) do
-      @yplaycenter = @yboxtop if !@balance
+      ((@yplaycenter = @yboxtop) && (@xboxleft +=10)) if !@balance
         1.upto 9 do |z|
           box = rect(@xboxleft, @yplaycenter, @boxside, @boxside, corners=4, fill: white)
            # here is creating array with boxes names & coordinates
-          @boxes["box"<<z.to_s] = ["#{box.left}, #{box.top}"]
+          @boxes["box"<<z.to_s] = ["#{box.left}".to_i, "#{box.top}".to_i]
            # moving boxes over the playzone
           @xboxleft = ("#{box.left}".to_i + @boxside + @step)
 
           # end loop after 3rd box created (rule for Slot machine)
           break if @balance && z == 3
           # change x,y when row is ended
-          @xboxleft = (@xplayleft + @step*3) if (z == 3 || z == 6)
+          @xboxleft = (@xplayleft + @step*4) if (z == 3 || z == 6)
           @yplaycenter += (@boxside + @step) if (z == 3 || z == 6)
         end
     end
@@ -179,6 +178,12 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     g1start_alert}        # hello alert for Slot machine
   end
 
+  def load_tictactoe
+    @stackplay.clear{
+    create_playzone
+    create_boxes}
+  end
+
 # Main layout _________________________________________________________________________________________________ 
     stack(margin: 10) do
 
@@ -191,9 +196,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
       flow(margin: 2) do
         btn_tictac = button "Tic-Tac-Toe", width: 90, heigth: 35, margin_right: 4 do
-
-          @stackplay.clear{create_playzone} if @boxes.size == 3
-
+          load_tictactoe
         end
         para strong "Miss about school years? Try it!", stroke: white
       end
