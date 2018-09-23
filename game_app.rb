@@ -173,14 +173,27 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
   # Methods for Tic Tac Toe ==================================================================================
   def create_choice
-    #@stackchoice = stack(left: @xplayleft, top: self.height*0.4) do
-      para "Choose your symbol:"
-      list_box items: ["X", "0"],
-        choose: "X" do |list|
-          @userchoice = list.text
+    @choiceflow = flow(left: 100, top: 72) do
+      para strong("Choose the symbol:   "), size: 10, stroke: orange
+      @n1 = list_box items: ["X", "0"], width: 60, fill: darkgoldenrod,
+        choose:() do |list|
+          while list.text == nil do
+          @userchoice = ""
+          end
+          if list.text != nil
+            @userchoice = list.text
+            alert("You play with _ #{@userchoice}
+            Start press on rectangles,
+            symbols will appear")   
+            @choiceflow.clear                           #clear list_box element after user has chose symbol
+          end
       end
-      #@userchoice = "0"
-    #end
+    end
+  end
+
+  def clear_tictac
+    @choiceflow.clear
+    @userchoice = nil
   end
 
   # Summary methods for start games ___________________________________________________________________________
@@ -200,8 +213,8 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     @stackplay.clear{
     create_playzone
     create_boxes
-    create_choice
     }
+    create_choice
   end
 
 # =============================================================================================================
