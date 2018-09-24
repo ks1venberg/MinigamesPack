@@ -95,16 +95,14 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
   def start_slotmachine
     clear_slothashes
-    
+
     @stacksyms.clear{
       @boxes.each_value do |value|
-        value.each do |x, y|
           @i += 1                               #@objsyms - is hash filled with animated para-objects with numbers
-          @objsyms["@sym"+@i.to_s] = para strong(""), size: 36, left: x.to_f + @boxside*0.25, top: @yplaycenter
-        end
+          @objsyms["@sym"+@i.to_s] = para strong(""), size: 36, left: value[0] + @boxside*0.25, top: @yplaycenter
       end}
 
-    @anm = animate(30) do |frame| # Animation block _________________________________
+    @anm = animate(30) do |frame|                       # Animation block _________________________________
       
       @objsyms.each_value do |value|          
         value.replace strong (generate_sym)             # here is animation working (replace "" with rand)
@@ -115,21 +113,21 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
         @handle.displace(0, -160)
         
         @anm.stop
-        # after animation stop symbols changed last time
+                                                        # after animation stop symbols changed last time
         @objsyms.each do |key, value|
           x = generate_sym
           value.replace strong (x)
           @nums << x                                    # then created final array with random numbers - @nums
         end
 
-        slotmachine_calc                                # method to count result
+        slotmachine_calc                                # call method to count result
 
         if @balance == 0
           @stackbalance.clear{show_balance}
           timer 0.5 do
             alert("Try again or play Tic-Tac-Toe")
             @stackplay.clear{create_playzone}
-            @balance = 200
+            create_balance
           end
         else
           @stackbalance.clear{show_balance}
@@ -137,7 +135,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
           @stackhandler.clear{create_handlesystem}
         end
       end
-    end                             #__________________________________________________
+    end                                                 # End animation_____________________________________
   end
 
   def slotmachine_calc
