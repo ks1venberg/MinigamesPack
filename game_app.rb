@@ -171,6 +171,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
   # Methods for Tic Tac Toe ==================================================================================
   def create_choice
+    clear_tictac
     @choiceflow = flow(left: 100, top: 72) do
       para strong("Choose the symbol:   "), size: 10, stroke: orange
       @n1 = list_box items: ["X", "0"], width: 60, fill: darkgoldenrod,
@@ -180,9 +181,10 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
           end
           if list.text != nil
             @userchoice = list.text
-            alert("You play with _ #{@userchoice}
+            alert(
+            "             You play with _ #{@userchoice}
             Start press on rectangles,
-            symbols will appear")   
+            and symbols will appear on the desk.")   
             @choiceflow.clear                           #clear list_box element after user has chose symbol
           end
       end
@@ -190,8 +192,12 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   end
 
   def clear_tictac
-    @choiceflow.clear
-    @userchoice = nil
+    if @choiceflow
+      @stackboxes.remove
+      @boxes = {}
+      @choiceflow.clear 
+      @userchoice = ""
+    end
   end
 
   # Summary methods for start games ___________________________________________________________________________
@@ -208,11 +214,11 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   end
 
   def load_tictactoe
+    create_choice
     @stackplay.clear{
     create_playzone
     create_boxes
     }
-    create_choice
   end
 
 # =============================================================================================================
@@ -221,6 +227,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
       flow(margin: 2) do
         btn_slotmachine = button "Slot machine", width: 90, heigth: 35, margin_right: 4 do
+          clear_tictac if @userchoice != ""
           load_slotmachine
         end
         para strong "Play this classic casino game!", stroke: white
@@ -228,13 +235,10 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
       flow(margin: 2) do
         btn_tictac = button "Tic-Tac-Toe", width: 90, heigth: 35, margin_right: 4 do
+          @balance = nil if @balance
           load_tictactoe
         end
         para strong "Miss about school years? Try it!", stroke: white
-      end
-
-      @stackchoice = stack(left: 180, top: 40) do
-        rect(0,0,1,1, nofill)
       end
 
       @stackplay = stack(left: (self.width - @plwidth)/2 - 10, top: 95, width: @plwidth, height: @plheight) do
@@ -244,7 +248,11 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
       #control buttons
       flow(left: self.width*0.29, top: self.height-80)  do
         button "Restart", width: 70, margin: 3 do
-          @stackplay.remove
+          if @balance
+            load_slotmachine
+          else
+            load_tictactoe
+          end
         end
         button "Exit App", width: 70, margin: 3 do
           exit
