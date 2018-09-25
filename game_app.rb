@@ -10,6 +10,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   @plheight = self.height*0.55
   # objects 
   @boxes = {}
+  @objectboxes = {}
   @objsyms = {}
   @nums = []
   @i = 0
@@ -43,12 +44,12 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     # @balance variable assigned only in Slot machine, so if its true- there will be created 3 boxes in the middle
     @stackboxes = stack(left: @xplayleft, top: @yplaytop) do
       ((@yplaycenter = @yboxtop) && (@xboxleft +=10)) if !@balance
-        1.upto 9 do |z|
-          box = rect(@xboxleft, @yplaycenter, @boxside, @boxside, corners=4, fill: white)
-           # here is creating array with boxes names & coordinates
-          @boxes["box"<<z.to_s] = ["#{box.left}".to_i, "#{box.top}".to_i]
+        1.upto 9 do |z|  # here is created hash with objects - rectangles
+          @objectboxes["box"<<z.to_s] = rect(@xboxleft, @yplaycenter, @boxside, @boxside, corners=4, fill: white)
+           # here is creating hash with boxes names & coordinates (by last box)
+          @boxes["box"<<z.to_s] = [(@objectboxes.values[-1].left).to_i, (@objectboxes.values[-1].top).to_i]
            # moving boxes over the playzone
-          @xboxleft = ("#{box.left}".to_i + @boxside + @step)
+          @xboxleft = ((@objectboxes.values[-1].left).to_i + @boxside + @step)
 
           # end loop after 3rd box created (rule for Slot machine)
           break if @balance && z == 3
@@ -195,13 +196,12 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   end
 
   def clear_tictac
-    if @choiceflow
-      @stackboxes.remove
       @boxes = {}
-      @choiceflow.clear 
+      @objectboxes = {}
+      @stackboxes.remove if @stackboxes
+      @choiceflow.clear if @choiceflow
       @userchoice = ""
       @compchoice = ""
-    end
   end
 
   # Summary methods for start games ___________________________________________________________________________
@@ -253,6 +253,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
       flow(left: self.width*0.29, top: self.height-80)  do
         button "Restart", width: 70, margin: 3 do
           if @balance
+            @objectboxes = {}
             load_slotmachine
           else
             load_tictactoe
