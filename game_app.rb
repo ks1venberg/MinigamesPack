@@ -9,7 +9,6 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   @plwidth = self.width*0.65
   @plheight = self.height*0.55
   # objects 
-  @boxes = {}
   @objectboxes = {}
   @objsyms = {}
   @nums = []
@@ -45,9 +44,12 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     @stackboxes = stack(left: @xplayleft, top: @yplaytop) do
       ((@yplaycenter = @yboxtop) && (@xboxleft +=10)) if !@balance
         1.upto 9 do |z|  # here is created hash with objects - rectangles
-          @objectboxes["box"<<z.to_s] = rect(@xboxleft, @yplaycenter, @boxside, @boxside, corners=4, fill: white)
-           # here is creating hash with boxes names & coordinates (by last box)
-          @boxes["box"<<z.to_s] = [(@objectboxes.values[-1].left).to_i, (@objectboxes.values[-1].top).to_i]
+          if @userchoice
+            @objectboxes[z.to_i] = rect(@xboxleft, @yplaycenter, @boxside, @boxside, corners=4, fill: white).click{
+              make_turn(@objectboxes[z.to_i].left, @objectboxes[z.to_i].top)}
+          else
+            @objectboxes[z.to_i] = rect(@xboxleft, @yplaycenter, @boxside, @boxside, corners=4, fill: white)
+          end
            # moving boxes over the playzone
           @xboxleft = ((@objectboxes.values[-1].left).to_i + @boxside + @step)
 
@@ -99,9 +101,9 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     clear_slothashes
 
     @stacksyms.clear{
-      @boxes.each_value do |value|
+      @objectboxes.each_value do |value|
           @i += 1                               #@objsyms - is hash filled with animated para-objects with numbers
-          @objsyms["@sym"+@i.to_s] = para strong(""), size: 36, left: value[0] + @boxside*0.25, top: @yplaycenter
+          @objsyms[@i.to_i] = para strong(""), size: 36, left: (value.left).to_i + @boxside*0.25, top: (value.top).to_i
       end}
 
     @anm = animate(30) do |frame|                       # Animation block _________________________________
@@ -195,8 +197,14 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     end
   end
 
+  def make_turn (x,y)
+    @stacksyms.append{
+      @objsyms = @objsyms
+      @i += 1
+      @objsyms[@i.to_s] = para strong("#{@userchoice}"), size: 36, left: x + @boxside*0.25, top: y}
+  end
+
   def clear_tictac
-      @boxes = {}
       @objectboxes = {}
       @stackboxes.remove if @stackboxes
       @choiceflow.clear if @choiceflow
