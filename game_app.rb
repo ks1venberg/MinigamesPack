@@ -175,7 +175,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
   # Methods for Tic Tac Toe ==================================================================================
   def create_choice
-    clear_tictac
+    clear_objects
     @choiceflow = flow(left: 100, top: 72) do
       para strong("Choose the symbol:   "), size: 10, stroke: orange
       lb1 = list_box items: ["X", "0"], width: 60, fill: darkgoldenrod,
@@ -201,10 +201,10 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     @stacksyms.append{
       @objsyms = @objsyms
       @i += 1
-      @objsyms[@i.to_s] = para strong("#{@userchoice}"), size: 36, left: x + @boxside*0.25, top: y}
+      @objsyms[@i.to_i] = para strong("#{@userchoice}"), size: 36, left: x + @boxside*0.25, top: y}
   end
 
-  def clear_tictac
+  def clear_objects
       @objectboxes = {}
       @stackboxes.remove if @stackboxes
       @choiceflow.clear if @choiceflow
@@ -230,7 +230,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     @stackplay.clear{
     create_playzone
     create_boxes
-    }
+    create_stacksym}
   end
 
 # =============================================================================================================
@@ -239,7 +239,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
       flow(margin: 2) do
         btn_slotmachine = button "Slot machine", width: 90, heigth: 35, margin_right: 4 do
-          clear_tictac if @userchoice != ""
+          clear_objects
           load_slotmachine
         end
         para strong "Play this classic casino game!", stroke: white
@@ -261,7 +261,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
       flow(left: self.width*0.29, top: self.height-80)  do
         button "Restart", width: 70, margin: 3 do
           if @balance
-            @objectboxes = {}
+            clear_objects
             load_slotmachine
           else
             load_tictactoe
