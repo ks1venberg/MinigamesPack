@@ -39,26 +39,26 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
   def create_boxes
   sizes
-    # first, is to check wich game has started and so decide about 1st box position
-    # @balance variable assigned only in Slot machine, so if its true- there will be created 3 boxes in the middle
-    @stackboxes = stack(left: @xplayleft, top: @yplaytop) do
-      ((@yplaycenter = @yboxtop) && (@xboxleft +=10)) if !@balance
-        1.upto 9 do |z|  # here is created hash with objects - rectangles
-          if @userchoice
+    
+    @stackboxes = stack(left: @xplayleft, top: @yplaytop) do          # first, is to check wich game has started and so decide about 1st box position:
+      ((@yplaycenter = @yboxtop) && (@xboxleft +=10)) if !@balance    # @balance assigned only in Slot machine, so if its true- there will be created 3 boxes in the middle
+        1.upto 9 do |z|                                               # here is created hash with objects - rectangles
+          if @userchoice                                                # clickable rects for tictactoe
             @objectboxes[z.to_i] = rect(@xboxleft, @yplaycenter, @boxside, @boxside, corners=4, fill: white).click{
               make_turn(@objectboxes[z.to_i].left, @objectboxes[z.to_i].top)}
-          else
+          else                                                          # standart rects for slotmachine
             @objectboxes[z.to_i] = rect(@xboxleft, @yplaycenter, @boxside, @boxside, corners=4, fill: white)
           end
-           # moving boxes over the playzone
-          @xboxleft = ((@objectboxes.values[-1].left).to_i + @boxside + @step)
 
-          # end loop after 3rd box created (rule for Slot machine)
-          break if @balance && z == 3
-          # change x,y when row is ended
-          @xboxleft = (@xplayleft + @step*4) if (z == 3 || z == 6)
+          @xboxleft = ((@objectboxes.values[-1].left).to_i + @boxside + @step) # moving boxes over the playzone
+          break if @balance && z == 3                                 # end loop after 3rd box created (rule for Slot machine)
+          @xboxleft = (@xplayleft + @step*4) if (z == 3 || z == 6)    # change x,y when row is ended
           @yplaycenter += (@boxside + @step) if (z == 3 || z == 6)
         end
+    end
+
+    @stacksyms = stack(left: 0, top: 0) do                            # stack for symbols
+      @objsyms = {}
     end
   end
   # _______________________________________________________________________________________________
@@ -82,30 +82,21 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     end
   end
 
-  def create_stacksym
-    @stacksyms = stack(left: 0, top: 0) do
-      @objsyms = {}
-    end
+  def refresh_symbols
+    @nums = []                                          #clear objects before animation restart
+    @stacksyms.clear{
+      @objectboxes.each_value do |value|
+          @i += 1                                       #@objsyms - is hash filled with animated para-objects with numbers
+          @objsyms[@i.to_i] = para strong(""), size: 36, left: (value.left).to_i + @boxside*0.25, top: (value.top).to_i
+      end}
   end
 
-  def generate_sym    #random numbers for @stacksyms & @nums
+  def generate_sym                                      #random numbers for @stacksyms & @nums
     rand(0..9).to_s
   end
 
-  def clear_slothashes    #clear objects on animation restart
-    @nums = []
-    @objsyms = {}
-  end
-
   def start_slotmachine
-    clear_slothashes
-
-    @stacksyms.clear{
-      @objectboxes.each_value do |value|
-          @i += 1                               #@objsyms - is hash filled with animated para-objects with numbers
-          @objsyms[@i.to_i] = para strong(""), size: 36, left: (value.left).to_i + @boxside*0.25, top: (value.top).to_i
-      end}
-
+    refresh_symbols
     @anm = animate(30) do |frame|                       # Animation block _________________________________
       
       @objsyms.each_value do |value|          
@@ -115,7 +106,6 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
       if @handle.top >= 190
         @handle.displace(0, -160)
-        
         @anm.stop
                                                         # after animation stop symbols changed last time
         @objsyms.each do |key, value|
@@ -124,20 +114,20 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
           @nums << x                                    # then created final array with random numbers - @nums
         end
 
-        slotmachine_calc                                # call method to count result
+          slotmachine_calc                              # call method to count result
 
-        if @balance == 0
-          @stackbalance.clear{show_balance}
-          timer 0.5 do
-            alert("Try again or play Tic-Tac-Toe")
-            @stackplay.clear{create_playzone}
-            create_balance
+          if @balance == 0
+            @stackbalance.clear{show_balance}
+              timer 0.5 do
+                alert("Try again or play Tic-Tac-Toe")
+                @stackplay.clear{create_playzone}
+                create_balance
+              end
+          else
+            @stackbalance.clear{show_balance}
+            #clear handle & create new one to restart animation
+            @stackhandler.clear{create_handlesystem}
           end
-        else
-          @stackbalance.clear{show_balance}
-          #clear handle & create new one to restart animation
-          @stackhandler.clear{create_handlesystem}
-        end
       end
     end                                                 # End animation_____________________________________
   end
@@ -183,6 +173,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
           while list.text == nil do
           @userchoice = ""
           end
+
           if list.text != nil
             @userchoice = list.text
             @compchoice = lb1.items.reject!{|q| q == @userchoice}.join
@@ -219,9 +210,8 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     create_playzone       # main area containing all objects (for both games)
     create_balance        # var @balance assigned (object creation depends from it)
     show_balance          # row with balance
-    create_boxes          # filling playzone with white boxes (3 for Slot machine, 9 for Tic Tac Toe)
-    create_handlesystem   # create two elements to start & visualize animation
-    create_stacksym       # area where placed objects(para) & symbols(numbers)
+    create_boxes          # filling playzone with white boxes (3 for Slot machine, 9 for Tic Tac Toe), & objects(para) with num_symbols
+    create_handlesystem   # create two elements to start & visualize animation     
     g1start_alert}        # hello alert for Slot machine
   end
 
@@ -229,8 +219,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     create_choice
     @stackplay.clear{
     create_playzone
-    create_boxes
-    create_stacksym}
+    create_boxes}
   end
 
 # =============================================================================================================
