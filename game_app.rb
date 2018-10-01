@@ -45,7 +45,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
         1.upto 9 do |z|                                               # here is created hash with objects - rectangles
           if @userchoice                                                # clickable rects for tictactoe
             @objectboxes[z.to_i] = rect(@xboxleft, @yplaycenter, @boxside, @boxside, corners=4, fill: white).click{
-              make_turn(@objectboxes[z.to_i].left, @objectboxes[z.to_i].top)}
+              make_turn("#{z.to_i}", @objectboxes[z.to_i].left, @objectboxes[z.to_i].top)}
           else                                                          # standart rects for slotmachine
             @objectboxes[z.to_i] = rect(@xboxleft, @yplaycenter, @boxside, @boxside, corners=4, fill: white)
           end
@@ -186,13 +186,19 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
           end
       end
     end
+    @nums = [1,2,3,4,5,6,7,8,9]
   end
 
-  def make_turn (x,y)
+  def make_turn (boxnum, x, y)
+    if !@nums.include?(boxnum.to_i)
+      alert("Choose another box")
+    else
     @stacksyms.append{
       @objsyms = @objsyms
       @i += 1
       @objsyms[@i.to_i] = para strong("#{@userchoice}"), size: 36, left: x + @boxside*0.25, top: y}
+      @nums.delete(boxnum.to_i)
+    end
   end
 
   def clear_objects
