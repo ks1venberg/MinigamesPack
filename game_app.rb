@@ -186,19 +186,30 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
           end
       end
     end
-    @nums = [1,2,3,4,5,6,7,8,9]
+    @nums = []
   end
 
   def make_turn (boxnum, x, y)
     if !@nums.include?(boxnum.to_i)
       alert("Choose another box")
     else
-    @stacksyms.append{
-      @objsyms = @objsyms
-      @i += 1
-      @objsyms[@i.to_i] = para strong("#{@userchoice}"), size: 36, left: x + @boxside*0.25, top: y}
-      @nums.delete(boxnum.to_i)
+      @stacksyms.append{
+        @objsyms = @objsyms
+        @i += 1
+        @objsyms[@i.to_i] = [para strong("#{@userchoice}"), size: 36, left: x + @boxside*0.25, top: y), "#{@userchoice}"]
+        }
+      @nums = @objectboxes.keys - @objsyms.keys
     end
+    pc_turn (boxnum)
+  end
+
+  def pc_turn (boxnum)
+      @stacksyms.append{
+        @objsyms = @objsyms
+        timer 0.5 do
+          @objsyms[boxnum] = [(para strong("#{@compchoice}"), size: 36, left: @objectboxes[boxnum].left + @boxside*0.25, top: @objectboxes[boxnum].top), "#{@compchoice}"]
+        end}
+    @nums = @objectboxes.keys - @objsyms.keys
   end
 
   def clear_objects
