@@ -200,6 +200,31 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
         }
       @nums = @objectboxes.keys - @objsyms.keys
     end
+    find_emptybox (boxnum)
+  end
+
+  def find_emptybox (boxnum)
+    @i = boxnum
+    boxnum = @nums.sample if @nums.size == 8
+
+    arr = []
+    if @objsyms.values.count{|v1,v2| v2==@userchoice} >=2
+      x = 1
+      y = 3
+      z = 0
+      q = 0
+      while y <= 9 do
+        arr = Array.new(3) {|i| i+=x }.each do |sym|
+          z +=1 if @objsyms[sym] && @objsyms[sym] == @userchoice
+          q +=1 if !@objsyms[sym]
+          boxnum = sym if z == 2 && q ==1
+          break if z == 0
+        end
+      x += y
+      y += x
+      end
+    end
+
     pc_turn (boxnum)
   end
 
