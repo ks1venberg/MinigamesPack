@@ -45,7 +45,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
         1.upto 9 do |z|                                               # here is created hash with objects - rectangles
           if @userchoice                                                # clickable rects for tictactoe
             @objectboxes[z.to_i] = rect(@xboxleft, @yplaycenter, @boxside, @boxside, corners=4, fill: white).click{
-              make_turn("#{z.to_i}", @objectboxes[z.to_i].left, @objectboxes[z.to_i].top)}
+              make_turn(z.to_i, @objectboxes[z.to_i].left, @objectboxes[z.to_i].top)}
           else                                                          # standart rects for slotmachine
             @objectboxes[z.to_i] = rect(@xboxleft, @yplaycenter, @boxside, @boxside, corners=4, fill: white)
           end
@@ -190,41 +190,34 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   end
 
   def make_turn (boxnum, x, y)
-    if !@nums.include?(boxnum.to_i)
+    if @objsyms.keys.include?(boxnum)
       alert("Choose another box")
     else
       @stacksyms.append{
         @objsyms = @objsyms
-        @i += 1
-        @objsyms[@i.to_i] = [para strong("#{@userchoice}"), size: 36, left: x + @boxside*0.25, top: y), "#{@userchoice}"]
+        @objsyms[boxnum] = [(para strong("#{@userchoice}"), size: 36, left: x + @boxside*0.25, top: y), "#{@userchoice}"]
         }
-      @nums = @objectboxes.keys - @objsyms.keys
     end
-    find_emptybox (boxnum)
+    find_emptybox
   end
 
-  def find_emptybox (boxnum)
-    @i = boxnum
-    boxnum = @nums.sample if @nums.size == 8
+  def find_emptybox
+    boxnum = (((@objectboxes.keys - @objsyms.keys).sample(1)).join).to_i if @objsyms.keys.size == 1
+    usrkeys = @objsyms.select{|k,(v1,v2)| v2==@userchoice}.keys
+    pckeys = @objsyms.select{|k,(v1,v2)| v2==@compchoice}.keys
 
     arr = []
-    if @objsyms.values.count{|v1,v2| v2==@userchoice} >=2
-      x = 1
-      y = 3
-      z = 0
-      q = 0
-      while y <= 9 do
-        arr = Array.new(3) {|i| i+=x }.each do |sym|
-          z +=1 if @objsyms[sym] && @objsyms[sym] == @userchoice
-          q +=1 if !@objsyms[sym]
-          boxnum = sym if z == 2 && q ==1
-          break if z == 0
-        end
-      x += y
-      y += x
+    if usrkeys.size >=2
+      boxnum = 0
+      x=1
+      while boxnum == 0 do
+        arr = Array.new(3){|i| i+=x}
+          if (usrkeys | arr).size >= arr.size
+            boxnum = ((arr - usrkeys).join).to_i  if !@objsyms[((arr - usrkeys).join).to_i]
+          end
+          x +=3
       end
     end
-
     pc_turn (boxnum)
   end
 
@@ -234,7 +227,6 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
         timer 0.5 do
           @objsyms[boxnum] = [(para strong("#{@compchoice}"), size: 36, left: @objectboxes[boxnum].left + @boxside*0.25, top: @objectboxes[boxnum].top), "#{@compchoice}"]
         end}
-    @nums = @objectboxes.keys - @objsyms.keys
   end
 
   def clear_objects
