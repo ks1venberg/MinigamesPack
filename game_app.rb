@@ -186,7 +186,6 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
           end
       end
     end
-    @nums = []
   end
 
   def make_turn (boxnum, x, y)
@@ -204,20 +203,22 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   def find_emptybox
     boxnum = (((@objectboxes.keys - @objsyms.keys).sample(1)).join).to_i if @objsyms.keys.size == 1
     usrkeys = @objsyms.select{|k,(v1,v2)| v2==@userchoice}.keys
-    pckeys = @objsyms.select{|k,(v1,v2)| v2==@compchoice}.keys
+    #pckeys = @objsyms.select{|k,(v1,v2)| v2==@compchoice}.keys
 
-    arr = []
     if usrkeys.size >=2
+      arr = []
       boxnum = 0
       x=1
       while boxnum == 0 do
         arr = Array.new(3){|i| i+=x}
-          if (usrkeys | arr).size >= arr.size
-            boxnum = ((arr - usrkeys).join).to_i  if !@objsyms[((arr - usrkeys).join).to_i]
-          end
+        usr_arr = usrkeys.select{|i| arr.include?(i)}
+          alert (usr_arr)
+          boxnum = ((arr - usr_arr).join).to_i if ((arr - usr_arr).size ==1 && !@objsyms[((arr - usr_arr).join).to_i])
+          break if boxnum != 0
           x +=3
       end
     end
+    boxnum = (((@objectboxes.keys - @objsyms.keys).sample(1)).join).to_i if boxnum == 0
     pc_turn (boxnum)
   end
 
