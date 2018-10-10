@@ -211,10 +211,11 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
       x=1
       while boxnum == 0 do
         arr = Array.new(3){|i| i+=x}
-        usr_arr = usrkeys.select{|i| arr.include?(i)}
-          alert (usr_arr)
-          boxnum = ((arr - usr_arr).join).to_i if ((arr - usr_arr).size ==1 && !@objsyms[((arr - usr_arr).join).to_i])
-          break if boxnum != 0
+        crop_usrkeys = usrkeys.select{|i| arr.include?(i)}
+          if crop_usrkeys.size == 2
+            boxnum = ((arr - crop_usrkeys).join).to_i if ((arr - crop_usrkeys).size ==1 && !@objsyms[((arr - crop_usrkeys).join).to_i])
+          end
+          break if boxnum != 0 or arr[2]>9
           x +=3
       end
     end
