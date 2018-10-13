@@ -201,26 +201,38 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   end
 
   def find_emptybox
-    boxnum = (((@objectboxes.keys - @objsyms.keys).sample(1)).join).to_i if @objsyms.keys.size == 1
+    @boxnum = (((@objectboxes.keys - @objsyms.keys).sample(1)).join).to_i if @objsyms.keys.size == 1
     usrkeys = @objsyms.select{|k,(v1,v2)| v2==@userchoice}.keys
-    #pckeys = @objsyms.select{|k,(v1,v2)| v2==@compchoice}.keys
+    pckeys = @objsyms.select{|k,(v1,v2)| v2==@compchoice}.keys
 
     if usrkeys.size >=2
-      arr = []
-      boxnum = 0
-      x=1
-      while boxnum == 0 do
+        arr = []
+        @boxnum = 0
+        x=1
+
+      while @boxnum == 0 do
         arr = Array.new(3){|i| i+=x}
-        crop_usrkeys = usrkeys.select{|i| arr.include?(i)}
-          if crop_usrkeys.size == 2
-            boxnum = ((arr - crop_usrkeys).join).to_i if ((arr - crop_usrkeys).size ==1 && !@objsyms[((arr - crop_usrkeys).join).to_i])
-          end
-          break if boxnum != 0 or arr[2]>9
-          x +=3
+        combi_counter(arr, usrkeys, pckeys)
+        x +=3
+        break if (@boxnum != 0 or arr[2]>=9  or @objsyms.size == 9) 
+      end
+
+        arr = []
+      while @boxnum == 0 do
+        arr = (1..3).each_with_object(arr){|i, arr| if i==1; arr << 1; else arr[i-1] = (3+arr[i-2].to_i); end} if arr.size == 0
+        combi_counter(arr, usrkeys, pckeys)
+        arr.map!{|i| i+=1} if @boxnum == 0
+        break if (@boxnum != 0 or arr[2]>9 or @objsyms.size == 9)
+      end
+
+      if @boxnum == 0
+        x = [[3,5,7], [1,5,9]]
+        arr = x[rand(0..1)]
+        combi_counter(arr, usrkeys, pckeys)
       end
     end
-    boxnum = (((@objectboxes.keys - @objsyms.keys).sample(1)).join).to_i if boxnum == 0
-    pc_turn (boxnum)
+    @boxnum = (((@objectboxes.keys - @objsyms.keys).sample(1)).join).to_i if boxnum == 0
+    pc_turn (@boxnum)
   end
 
   def pc_turn (boxnum)
