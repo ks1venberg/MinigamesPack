@@ -194,10 +194,27 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     else
       @stacksyms.append{
         @objsyms = @objsyms
-        @objsyms[boxnum] = [(para strong("#{@userchoice}"), size: 36, left: x + @boxside*0.25, top: y), "#{@userchoice}"]
-        }
+        @objsyms[boxnum] = [(para strong("#{@userchoice}"), size: 36, left: x + @boxside*0.25, top: y), "#{@userchoice}"]}
     end
     find_emptybox
+  end
+
+  def calc_winner (combi_user, pc_user)
+    if combi_user.size == 3
+      alert("You win the game!")
+      load_tictactoe
+    elsif pc_user.size == 3
+      alert("PC wins!")
+      load_tictactoe
+    end
+    load_tictactoe if @objsyms.size == 9
+  end
+
+  def combi_counter (arr, usrkeys, pckeys)
+    combi_user = usrkeys.select{|i| arr.include?(i)}
+    pc_user = pckeys.select{|i| arr.include?(i)}
+      calc_winner(combi_user, pc_user)
+    @boxnum = ((arr - combi_user).join).to_i if combi_user.size ==2 && !@objsyms[((arr - combi_user).join).to_i]
   end
 
   def find_emptybox
@@ -231,7 +248,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
         combi_counter(arr, usrkeys, pckeys)
       end
     end
-    @boxnum = (((@objectboxes.keys - @objsyms.keys).sample(1)).join).to_i if boxnum == 0
+    @boxnum = (((@objectboxes.keys - @objsyms.keys).sample(1)).join).to_i if @boxnum == 0
     pc_turn (@boxnum)
   end
 
