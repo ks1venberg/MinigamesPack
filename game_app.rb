@@ -199,22 +199,24 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
     find_emptybox
   end
 
-  def calc_winner (combi_user, pc_user)
-    if combi_user.size == 3
-      alert("You win the game!")
-      load_tictactoe
-    elsif pc_user.size == 3
-      alert("PC wins!")
-      load_tictactoe
-    end
-    load_tictactoe if @objsyms.size == 9
-  end
-
   def combi_counter (arr, usrkeys, pckeys)
     combi_user = usrkeys.select{|i| arr.include?(i)}
-    pc_user = pckeys.select{|i| arr.include?(i)}
-      calc_winner(combi_user, pc_user)
-    @boxnum = ((arr - combi_user).join).to_i if combi_user.size ==2 && !@objsyms[((arr - combi_user).join).to_i]
+    combi_pc = pckeys.select{|i| arr.include?(i)}
+      
+      win_text = ""
+    if combi_pc.size == 3 && combi_user.size == 0
+      win_text = "PC won the game"
+    elsif (combi_pc.size == 0 && combi_user.size == 3 && win_text == "")
+      win_text = "You're the winner!"
+    end
+
+    if win_text != ""
+      alert(win_text)
+      load_tictactoe
+    else
+      @boxnum = ((arr - combi_user).join).to_i if combi_user.size ==2 && !@objsyms[((arr - combi_user).join).to_i]
+      @boxnum = ((arr - combi_pc).join).to_i if combi_pc.size ==2 && !@objsyms[((arr - combi_pc).join).to_i]
+    end
   end
 
   def find_emptybox
