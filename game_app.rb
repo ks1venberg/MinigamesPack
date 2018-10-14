@@ -231,7 +231,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
         arr = Array.new(3){|i| i+=x}
         combi_counter(arr, usrkeys, pckeys)
         x +=3
-        break if (@boxnum != 0 or arr[2]>=9  or @objsyms.size == 9) 
+        break if (@boxnum != 0 or arr[2]>=9) 
       end
 
         arr = []
@@ -239,17 +239,20 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
         arr = (1..3).each_with_object(arr){|i, arr| if i==1; arr << 1; else arr[i-1] = (3+arr[i-2].to_i); end} if arr.size == 0
         combi_counter(arr, usrkeys, pckeys)
         arr.map!{|i| i+=1} if @boxnum == 0
-        break if (@boxnum != 0 or arr[2]>9 or @objsyms.size == 9)
+        break if (@boxnum != 0 or arr[2]>9)
       end
 
       if @boxnum == 0
         x = [[3,5,7], [1,5,9]]
         arr = x[rand(0..1)]
         combi_counter(arr, usrkeys, pckeys)
+        if arr == x[0]; combi_counter(x[1], usrkeys, pckeys); else combi_counter(x[0], usrkeys, pckeys); end
       end
     end
+
     @boxnum = (((@objectboxes.keys - @objsyms.keys).sample(1)).join).to_i if @boxnum == 0
-    pc_turn (@boxnum)
+    load_tictactoe if @objsyms.size == 9
+    pc_turn(@boxnum) if @userchoice !=""
   end
 
   def pc_turn (boxnum)
@@ -257,7 +260,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
         @objsyms = @objsyms
         timer 0.5 do
           @objsyms[boxnum] = [(para strong("#{@compchoice}"), size: 36, left: @objectboxes[boxnum].left + @boxside*0.25, top: @objectboxes[boxnum].top), "#{@compchoice}"]
-        end}
+        end} if @objsyms.size < 9
   end
 
   def clear_objects
