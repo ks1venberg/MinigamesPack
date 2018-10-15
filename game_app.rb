@@ -257,25 +257,28 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
       end
     end
 
-    @boxnum = (((@objectboxes.keys - @objsyms.keys).sample(1)).join).to_i if @boxnum == 0
+    if (@boxnum == 0 && @win_text == "" && @objsyms.size < 9); @boxnum = (((@objectboxes.keys - @objsyms.keys).sample(1)).join).to_i; end
     load_tictactoe if @objsyms.size == 9
     pc_turn(@boxnum) if @userchoice !=""
   end
 
   def pc_turn (boxnum)
-      @stacksyms.append{
-        @objsyms = @objsyms
-        timer 0.5 do
-          @objsyms[boxnum] = [(para strong("#{@compchoice}"), size: 36, left: @objectboxes[boxnum].left + @boxside*0.25, top: @objectboxes[boxnum].top), "#{@compchoice}"]
-        end} if @objsyms.size < 9
+    @stacksyms.append{
+      @objsyms = @objsyms
+      timer 0.3 do
+      @objsyms[boxnum] = [(para strong("#{@compchoice}"), size: 36, left: @objectboxes[boxnum].left + @boxside*0.25, top: @objectboxes[boxnum].top), "#{@compchoice}"]
+      end} if @objsyms.size < 9
+    if @win_text == "PC won the game"; alert(@win_text); load_tictactoe; end
   end
 
   def clear_objects
+      @stacksyms.remove if @stacksyms
       @objectboxes = {}
       @stackboxes.remove if @stackboxes
       @choiceflow.clear if @choiceflow
       @userchoice = ""
       @compchoice = ""
+      @win_text = ""
   end
 
   # Summary methods for start games ___________________________________________________________________________
