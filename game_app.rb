@@ -15,6 +15,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   @i = 0
   @userchoice = ""
   @compchoice = ""
+  @win_text = ""
 
   # Common methods for both games ________________________________________________________________
   def sizes
@@ -189,14 +190,18 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   end
 
   def make_turn (boxnum, x, y)
-    if @objsyms.keys.include?(boxnum)
-      alert("Choose another box")
+    if @win_text !=""
+      find_emptybox
     else
-      @stacksyms.append{
+      if @objsyms.keys.include?(boxnum)
+        alert("Choose another box")
+      else
+        @stacksyms.append{
         @objsyms = @objsyms
         @objsyms[boxnum] = [(para strong("#{@userchoice}"), size: 36, left: x + @boxside*0.25, top: y), "#{@userchoice}"]}
+      end
+        find_emptybox
     end
-    find_emptybox
   end
 
   def combi_counter (arr, usrkeys, pckeys)
