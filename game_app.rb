@@ -8,14 +8,6 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   # size of playzone (260x242 px from 400x440)
   @plwidth = self.width*0.65
   @plheight = self.height*0.55
-  # objects 
-  @objectboxes = {}
-  @objsyms = {}
-  @nums = []
-  @i = 0
-  @userchoice = ""
-  @compchoice = ""
-  @win_text = ""
 
   # Common methods for both games ________________________________________________________________
   def sizes
@@ -84,11 +76,12 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   end
 
   def refresh_symbols
-    @nums = []                                          #clear objects before animation restart
+    @nums = []                                         #clear objects before animation restart
+    z = 0
     @stacksyms.clear{
       @objectboxes.each_value do |value|
-          @i += 1                                       #@objsyms - is hash filled with animated para-objects with numbers
-          @objsyms[@i.to_i] = para strong(""), size: 36, left: (value.left).to_i + @boxside*0.25, top: (value.top).to_i
+        z += 1                                       #@objsyms - is hash filled with animated para-objects with numbers
+        @objsyms[z.to_i] = para strong(""), size: 36, left: (value.left).to_i + @boxside*0.25, top: (value.top).to_i
       end}
   end
 
@@ -98,7 +91,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
   def start_slotmachine
     refresh_symbols
-    @anm = animate(30) do |frame|                       # Animation block _________________________________
+    anm = animate(30) do |frame|                       # Animation block _________________________________
       
       @objsyms.each_value do |value|          
         value.replace strong (generate_sym)             # here is animation working (replace "" with rand)
@@ -107,7 +100,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
 
       if @handle.top >= 190
         @handle.displace(0, -160)
-        @anm.stop
+        anm.stop
                                                         # after animation stop symbols changed last time
         @objsyms.each do |key, value|
           x = generate_sym
@@ -151,7 +144,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   end
 
   def g1start_alert
-    timer 0.5 do
+    timer 0.3 do
       stack margin_left: 2, align:'left' do
         alert(
         "       Three equal numbers gives you +50$
@@ -178,15 +171,19 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
           if list.text != nil
             @userchoice = list.text
             @compchoice = lb1.items.reject!{|q| q == @userchoice}.join
-            alert(
-            "            You play with _ #{@userchoice}
-            Computer plays with _ #{@compchoice}\n
-            Start press on rectangles,
-            - symbols will appear on the desk.")   
+              alert_choice
             @choiceflow.clear                           #clear list_box element after user has chose symbol
           end
       end
     end
+  end
+
+  def alert_choice
+    alert(
+    "    You play with _ #{@userchoice}
+    Computer plays with _ #{@compchoice}\n
+    Start press on rectangles,
+    - symbols will appear on the desk.")
   end
 
   def make_turn (boxnum, x, y)
@@ -257,7 +254,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
         combi_counter(arr, usrkeys, pckeys)
         if arr == x[0]; combi_counter(x[1], usrkeys, pckeys); else combi_counter(x[0], usrkeys, pckeys); end
       end
-    end
+  end
 
     if (@boxnum == 0 && @win_text == "" && @objsyms.size < 9); @boxnum = (((@objectboxes.keys - @objsyms.keys).sample(1)).join).to_i; end
     load_tictactoe if @objsyms.size == 9
@@ -312,7 +309,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
           clear_objects
           load_slotmachine
         end
-        para strong "Play this classic casino game!", stroke: white
+          para strong "Play this classic casino game!", stroke: white
       end
 
       flow(margin: 2) do
@@ -320,7 +317,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
           @balance = nil if @balance
           load_tictactoe
         end
-        para strong "Miss about school years? Try it!", stroke: white
+          para strong "Miss about school years? Try it!", stroke: white
       end
 
       @stackplay = stack(left: (self.width - @plwidth)/2 - 10, top: 95, width: @plwidth, height: @plheight) do
