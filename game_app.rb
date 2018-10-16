@@ -190,7 +190,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   end
 
   def make_turn (boxnum, x, y)
-    if @win_text !=""
+    if @win_text =="PC won the game"
       find_emptybox
     else
       if @objsyms.keys.include?(boxnum)
@@ -247,7 +247,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
       while @boxnum == 0 do
         arr = (1..3).each_with_object(arr){|i, arr| if i==1; arr << 1; else arr[i-1] = (3+arr[i-2].to_i); end} if arr.size == 0
         combi_counter(arr, usrkeys, pckeys)
-        arr.map!{|i| i+=1} if @boxnum == 0
+        arr.map!{|i| i+=1} if @win_text ==""
         break if (@boxnum != 0 or arr[2]>9)
       end
 
@@ -274,6 +274,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   end
 
   def clear_objects
+      @objsyms = {}
       @stacksyms.remove if @stacksyms
       @objectboxes = {}
       @stackboxes.remove if @stackboxes
