@@ -1,6 +1,6 @@
 require 'shoes'
 
-Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
+Shoes.app(title: "Minigames Pack", width: 400, height: 440, resizable: false) do
   background darkgreen # main layout color
   
   # Methods and variables ========================================================================
@@ -26,7 +26,7 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   end
 
   def create_playzone
-      @playzone = rect(0, 0, @plwidth, @plheight, corners=4, fill: darkgoldenrod)
+      @playzone = rect(0, 0, @plwidth, @plheight, corners=4, fill: darkgoldenrod, strokewidth: 5, stroke: white..grey)
     sizes
   end
 
@@ -63,14 +63,14 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   
   def show_balance
     @stackbalance = stack(left: 0, top: 0) do
-      @bal_msg = para "Your balance: ", strong(@balance.to_s), align: 'center', top: 10
+      @bal_msg = para "Your balance: ", strong(@balance.to_s), stroke: black, align: 'center', top: 10
     end
   end
 
   def create_handlesystem
     @stackhandler = stack(left: 0, top: 0) do
-      @rcol = rect(229, 50, self.width*0.02, self.height*0.33, corners=4, fill: orange..red)
-      @handle = oval(220, 45, radius: 15, fill: orangered)
+      @rcol = rect(229, 50, self.width*0.02, self.height*0.33, corners=4, fill: yellow..red)
+      @handle = oval(220, 45, radius: 15, fill: red)
       @handle.click{start_slotmachine}
     end
   end
@@ -161,8 +161,8 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
   def create_choice
     clear_objects
     @choiceflow = flow(left: 100, top: 72) do
-      para strong("Choose the symbol:   "), size: 10, stroke: orange
-      lb1 = list_box items: ["X", "0"], width: 60, fill: darkgoldenrod,
+      para strong("Before click: choose X / O    "), size: 10, stroke: orange
+      lb1 = list_box items: ["X", "0"], width: 60,
         choose:() do |list|
           while list.text == nil do
           @userchoice = ""
@@ -321,11 +321,13 @@ Shoes.app(title: "welcome to minigames pack!", width: 400, height: 440) do
       end
 
       @stackplay = stack(left: (self.width - @plwidth)/2 - 10, top: 95, width: @plwidth, height: @plheight) do
-        rect(0, 0, @plwidth, @plheight, corners=4, fill: darkgoldenrod)
+        p1 = rect(0, 0, @plwidth, @plheight, corners=4, fill: darkgoldenrod, strokewidth: 5, stroke: white..grey)
+        p2 = para " "*4, strong("welcome"), size: 30, stroke: white, top: 100
       end
 
+
       #control buttons
-      flow(left: self.width*0.29, top: self.height-80)  do
+      flow(left: self.width*0.29, top: self.height-80) do
         button "Restart", width: 70, margin: 3 do
           if @balance
             clear_objects
