@@ -158,8 +158,8 @@ Shoes.app(title: "Minigames Pack", width: 400, height: 440, resizable: false) do
   end
 
   # Methods for Tic Tac Toe ==================================================================================
-  def create_choice
-    clear_objects
+  def create_choice                                    #1.0 first method for symbol choice 
+    clear_objects                                      #1.1 renew all objects on restart
     @choiceflow = flow(left: 100, top: 72) do
       para strong("Before click: choose X / O    "), size: 10, stroke: orange
       lb1 = list_box items: ["X", "0"], width: 60,
@@ -178,7 +178,7 @@ Shoes.app(title: "Minigames Pack", width: 400, height: 440, resizable: false) do
     end
   end
 
-  def alert_choice
+  def alert_choice                                        #1.2 start alert for TicTacToe
     alert(
     "    You play with _ #{@userchoice}
     Computer plays with _ #{@compchoice}\n
@@ -186,7 +186,7 @@ Shoes.app(title: "Minigames Pack", width: 400, height: 440, resizable: false) do
     - symbols will appear on the desk.")
   end
 
-  def make_turn (boxnum, x, y)
+  def make_turn (boxnum, x, y)                            #2 method for user turn
     if @objsyms.keys.include?(boxnum)
       alert("Choose another box")
     else
@@ -194,10 +194,10 @@ Shoes.app(title: "Minigames Pack", width: 400, height: 440, resizable: false) do
       @objsyms = @objsyms
       @objsyms[boxnum] = [(para strong("#{@userchoice}"), size: 36, left: x + @boxside*0.25, top: y), "#{@userchoice}"]}
     end
-      find_emptybox
+      find_emptybox                                       # call method to check all combinations for next - pc turn
   end
 
-  def combi_counter (arr, usrkeys, pckeys)
+  def combi_counter (arr, usrkeys, pckeys)                #4 here checks count of symbols in winnner arrays, or assigned boxnum if count is low
     combi_user = usrkeys.select{|i| arr.include?(i)}
     combi_pc = pckeys.select{|i| arr.include?(i)}
     @boxnum = ((arr - combi_user).join).to_i if combi_user.size ==2 && !@objsyms[((arr - combi_user).join).to_i]
@@ -207,19 +207,19 @@ Shoes.app(title: "Minigames Pack", width: 400, height: 440, resizable: false) do
     end
 
     if (combi_pc.size == 2 && !@objsyms[((arr - combi_pc).join).to_i] && @objsyms.size !=0)
-      @boxnum = ((arr - combi_pc).join).to_i
+      @boxnum = ((arr - combi_pc).join).to_i               # in this case if boxnum assigned, then pc need to stamp symbol, then will be alert
       @win_text = "PC won the game"
     elsif combi_pc.size == 3
       @win_text = "PC won the game"
     end
 
-    if @win_text == "You're the winner!" or combi_pc.size == 3
+    if @win_text == "You're the winner!" or combi_pc.size == 3  # if winner is known - alert shows immediately
       alert(@win_text)
       load_tictactoe      
     end
   end
 
-  def find_emptybox
+  def find_emptybox                                          #3 method has two targets: first to find empty box for pc turn, second to generate all combies
     @boxnum = (((@objectboxes.keys - @objsyms.keys).sample(1)).join).to_i if @objsyms.keys.size == 1
     usrkeys = @objsyms.select{|k,(v1,v2)| v2==@userchoice}.keys
     pckeys = @objsyms.select{|k,(v1,v2)| v2==@compchoice}.keys
@@ -231,7 +231,7 @@ Shoes.app(title: "Minigames Pack", width: 400, height: 440, resizable: false) do
 
       while @boxnum == 0 do
         arr = Array.new(3){|i| i+=x}
-        combi_counter(arr, usrkeys, pckeys)
+        combi_counter(arr, usrkeys, pckeys)                   # after array is generated it`s checks through special method
         x +=3
         break if (@boxnum != 0 or arr[2]>=9) 
       end
@@ -245,7 +245,7 @@ Shoes.app(title: "Minigames Pack", width: 400, height: 440, resizable: false) do
       end
 
       if @boxnum == 0
-        x = [[3,5,7], [1,5,9]]
+        x = [[3,5,7], [1,5,9]]                                # diagonal combies. only random one is assigned, but checked both (for pc and user)
         arr = x[rand(0..1)]
         combi_counter(arr, usrkeys, pckeys)
         if arr == x[0]; combi_counter(x[1], usrkeys, pckeys); else combi_counter(x[0], usrkeys, pckeys); end
@@ -255,10 +255,10 @@ Shoes.app(title: "Minigames Pack", width: 400, height: 440, resizable: false) do
     if (@boxnum == 0 && @win_text == "" && @objsyms.size !=0); @boxnum = (((@objectboxes.keys - @objsyms.keys).sample(1)).join).to_i; end
     load_tictactoe if @objsyms.size == 9
     pc_turn(@boxnum) if @userchoice !=""
-    
+
   end
 
-  def pc_turn (boxnum)
+  def pc_turn (boxnum)                                        #4 pc stamps the symbol assigned in find_emptybox or combi counter method
     @stacksyms.append{
       @objsyms = @objsyms
       timer 0.3 do
@@ -267,7 +267,7 @@ Shoes.app(title: "Minigames Pack", width: 400, height: 440, resizable: false) do
     if @win_text == "PC won the game"; alert(@win_text); load_tictactoe; end
   end
 
-  def clear_objects
+  def clear_objects                                            # cleaning the object stacks & variables on restart
       @userchoice = ""
       @compchoice = ""
       @win_text = ""
