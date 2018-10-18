@@ -1,2 +1,2 @@
 # simple_game_pack
-gui for few games pack (used: ruby, gem_shoes, js)
+gui for two games pack (used: ruby 2.3.3, gem_shoes 4, js)
