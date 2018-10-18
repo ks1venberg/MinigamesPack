@@ -187,40 +187,36 @@ Shoes.app(title: "Minigames Pack", width: 400, height: 440, resizable: false) do
   end
 
   def make_turn (boxnum, x, y)
-    if @win_text =="PC won the game"
-      find_emptybox
+    if @objsyms.keys.include?(boxnum)
+      alert("Choose another box")
     else
-      if @objsyms.keys.include?(boxnum)
-        alert("Choose another box")
-      else
-        @stacksyms.append{
-        @objsyms = @objsyms
-        @objsyms[boxnum] = [(para strong("#{@userchoice}"), size: 36, left: x + @boxside*0.25, top: y), "#{@userchoice}"]}
-      end
-        find_emptybox
+      @stacksyms.append{
+      @objsyms = @objsyms
+      @objsyms[boxnum] = [(para strong("#{@userchoice}"), size: 36, left: x + @boxside*0.25, top: y), "#{@userchoice}"]}
     end
+      find_emptybox
   end
 
   def combi_counter (arr, usrkeys, pckeys)
     combi_user = usrkeys.select{|i| arr.include?(i)}
     combi_pc = pckeys.select{|i| arr.include?(i)}
-
     @boxnum = ((arr - combi_user).join).to_i if combi_user.size ==2 && !@objsyms[((arr - combi_user).join).to_i]
     
-    if combi_pc.size == 2 && !@objsyms[((arr - combi_pc).join).to_i]
+    if combi_user.size == 3 && @win_text == ""
+      @win_text = "You're the winner!"
+    end
+
+    if (combi_pc.size == 2 && !@objsyms[((arr - combi_pc).join).to_i] && @objsyms.size !=0)
       @boxnum = ((arr - combi_pc).join).to_i
       @win_text = "PC won the game"
     elsif combi_pc.size == 3
       @win_text = "PC won the game"
-    elsif combi_user.size == 3 && @win_text == ""
-      @win_text = "You're the winner!"
     end
 
     if @win_text == "You're the winner!" or combi_pc.size == 3
       alert(@win_text)
       load_tictactoe      
     end
-    
   end
 
   def find_emptybox
@@ -244,7 +240,7 @@ Shoes.app(title: "Minigames Pack", width: 400, height: 440, resizable: false) do
       while @boxnum == 0 do
         arr = (1..3).each_with_object(arr){|i, arr| if i==1; arr << 1; else arr[i-1] = (3+arr[i-2].to_i); end} if arr.size == 0
         combi_counter(arr, usrkeys, pckeys)
-        arr.map!{|i| i+=1} if @win_text ==""
+        arr.map!{|i| i+=1}
         break if (@boxnum != 0 or arr[2]>9)
       end
 
@@ -254,11 +250,12 @@ Shoes.app(title: "Minigames Pack", width: 400, height: 440, resizable: false) do
         combi_counter(arr, usrkeys, pckeys)
         if arr == x[0]; combi_counter(x[1], usrkeys, pckeys); else combi_counter(x[0], usrkeys, pckeys); end
       end
-  end
+    end
 
-    if (@boxnum == 0 && @win_text == "" && @objsyms.size < 9); @boxnum = (((@objectboxes.keys - @objsyms.keys).sample(1)).join).to_i; end
+    if (@boxnum == 0 && @win_text == "" && @objsyms.size !=0); @boxnum = (((@objectboxes.keys - @objsyms.keys).sample(1)).join).to_i; end
     load_tictactoe if @objsyms.size == 9
     pc_turn(@boxnum) if @userchoice !=""
+    
   end
 
   def pc_turn (boxnum)
@@ -271,14 +268,14 @@ Shoes.app(title: "Minigames Pack", width: 400, height: 440, resizable: false) do
   end
 
   def clear_objects
+      @userchoice = ""
+      @compchoice = ""
+      @win_text = ""
       @objsyms = {}
       @stacksyms.remove if @stacksyms
       @objectboxes = {}
       @stackboxes.remove if @stackboxes
       @choiceflow.clear if @choiceflow
-      @userchoice = ""
-      @compchoice = ""
-      @win_text = ""
   end
 
   # Summary methods for start games ___________________________________________________________________________
